@@ -6,16 +6,18 @@ import java.util.Scanner;
 
 public class BootstrapDriver {
 
+    // Main driver of system, starts bootstrap server and UI thread
     public static void main(String[] args) throws IOException {
 
-
+        // PArse config file
         File bnconfig = new File("bnconfig.txt");
         Scanner scan = new Scanner (bnconfig);
         int bootstrap_id = Integer.parseInt(scan.nextLine());
         int bootstrap_conn_port = Integer.parseInt(scan.nextLine());
         ServerSocket ss = new ServerSocket(bootstrap_conn_port);
 
-        Bootstrap bootstrap_ns = new Bootstrap();
+        Bootstrap bootstrap_ns = new Bootstrap(bootstrap_id);
+
         while (scan.hasNextLine()) {
             String[] pair = scan.nextLine().split(" ");
             bootstrap_ns.pairs.put(Integer.parseInt(pair[0]),pair[1]);
@@ -29,8 +31,6 @@ public class BootstrapDriver {
             Socket socket = ss.accept();
             System.out.println("Nameserver connected");
         }
-
-
 
     }
 }

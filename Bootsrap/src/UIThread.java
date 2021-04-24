@@ -6,6 +6,7 @@ public class UIThread  extends Thread{
 
     Bootstrap bootstrap_ns;
 
+    // Default Constructor
     public UIThread(Bootstrap bootstrap_ns){
         this.bootstrap_ns = bootstrap_ns;
     }
@@ -14,7 +15,6 @@ public class UIThread  extends Thread{
 
         Scanner scan = new Scanner(System.in);
         String query = "";
-
 
         while(!query.equals("quit")) {
 
@@ -33,7 +33,7 @@ public class UIThread  extends Thread{
                     }
                     break;
 
-                case "Insert":
+                case "insert":
 
                     try {
                         bootstrap_ns.insert(Integer.parseInt(query_list[1]), query_list[2]);

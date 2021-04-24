@@ -1,17 +1,19 @@
 public class NSConfig {
 
-     String predecessor_ip;
-     int predecessor_port;
-     String successor_ip;
-     int successor_port;
+    int id;
+    int conn_port;
 
-     int predecessor_id;
-     int successor_id;
+    //Predecessor info
+    String predecessor_ip;
+    int predecessor_port;
+    int predecessor_id;
 
-     int id;
-     int conn_port;
+    //Successor info
+    String successor_ip;
+    int successor_port;
+    int successor_id;
 
-
+    // Default Constructor
     public NSConfig(int id, int conn_port){
 
         this.id = id;
@@ -22,6 +24,7 @@ public class NSConfig {
         predecessor_id = 0;
     }
 
+    // If changes to pred/succ occur
     public void reconfigure(int successor_port, int predecessor_port, int  successor_id, int predecessor_id, String successor_ip, String predecessor_ip) {
 
         this.successor_port = successor_port;
