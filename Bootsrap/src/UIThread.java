@@ -18,7 +18,7 @@ public class UIThread  extends Thread{
 
         while(!query.equals("quit")) {
 
-            System.out.print("myDHT>_");
+            System.out.print("Bootstrap-NS>_");
             query = scan.nextLine();
             String[] query_list = query.split(" ");
 
