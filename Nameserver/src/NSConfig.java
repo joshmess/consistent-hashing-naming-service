@@ -1,3 +1,6 @@
+/*
+* This class stores information about each nodes predecessor and successor
+*/
 public class NSConfig {
 
     int id;

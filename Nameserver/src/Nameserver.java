@@ -1,6 +1,9 @@
 import java.net.Socket;
 import java.util.HashMap;
 
+/*
+* This class is a blueprint for a nameserver object, stores data pairs, and provides service implmentation.
+*/
 public class Nameserver {
 
     NSConfig configuration;

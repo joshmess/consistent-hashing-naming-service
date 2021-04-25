@@ -7,6 +7,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Scanner;
 
+
+/*
+* This class represents a bootstrap name server and provides service implementation.
+*/
 public class Bootstrap {
 
     NSConfig configuration;
