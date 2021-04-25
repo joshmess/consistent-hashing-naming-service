@@ -35,7 +35,6 @@ public class BootstrapDriver {
         while(true){
 
             Socket ns_socket = ss.accept();
-            System.out.println("Nameserver connected");
 
             ObjectInputStream ins = new ObjectInputStream(ns_socket.getInputStream());
             ObjectOutputStream outs = new ObjectOutputStream(ns_socket.getOutputStream());
@@ -78,7 +77,7 @@ public class BootstrapDriver {
                             }
                         }
                         //signal end of transfer
-                        outs.writeObject(-1);
+                        outs.writeObject("END");
                     }
 
             }
