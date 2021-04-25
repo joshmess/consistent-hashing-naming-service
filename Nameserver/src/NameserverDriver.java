@@ -26,7 +26,7 @@ public class NameserverDriver {
         while(!query.equals("quit")){
 
             // take in query
-            System.out.println(prompt);
+            System.out.print(prompt);
             query = scan.nextLine();
             String[] query_list = query.split(" ");
 
@@ -73,7 +73,7 @@ public class NameserverDriver {
                     }while(true);
 
                     System.out.println(">_Successful Entry");
-                    System.out.println(">_Range of IDs Managed: ["+id_tuple[0]+","+id);
+                    System.out.println(">_Range of IDs Managed: ["+id_tuple[0]+","+id+"]");
                     System.out.println(">_Servers Visited: ["+servers_visited+"]");
 
                     outs.close();
