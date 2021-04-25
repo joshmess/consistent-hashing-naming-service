@@ -5,8 +5,6 @@ import java.io.ObjectOutputStream;
 import java.net.Inet4Address;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.file.Paths;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Scanner;
 
@@ -50,7 +48,7 @@ public class BootstrapDriver {
                     String servers_visited = "0";
                     //create list of servers visited in format 'ns1,ns2,ns3...'
                     for (int id : bootstrap_ns.server_list) {
-                        if (Integer.parseInt(ns_config[1]) > id) {
+                        if (Integer.parseInt(ns_config[1]) > id && id != 0) {
                             servers_visited += "," + id;
                         }
                     }
