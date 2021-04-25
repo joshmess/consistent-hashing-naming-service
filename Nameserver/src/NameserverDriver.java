@@ -12,8 +12,10 @@ public class NameserverDriver {
         Scanner config_scan = new Scanner (nsconfig);
         int id = Integer.parseInt(config_scan.nextLine());
         int conn_port = Integer.parseInt(config_scan.nextLine());
-        String server_ip = config_scan.nextLine().split(" ")[0];
-        int server_port = Integer.parseInt(config_scan.nextLine().split(" ")[1]);
+
+        String address_tuple = config_scan.nextLine();
+        String server_ip = address_tuple.split(" ")[0];
+        int server_port = Integer.parseInt(address_tuple.split(" ")[1]);
 
         // create new ns object
         Nameserver ns = new Nameserver(id,conn_port);
@@ -57,17 +59,18 @@ public class NameserverDriver {
 
                     ns.configuration.id = id;
                     ns.configuration.reconfigure(Integer.parseInt(succ_tuple[1]),Integer.parseInt(pred_tuple[1]),Integer.parseInt(id_tuple[1]),Integer.parseInt(id_tuple[0]),succ_tuple[0],pred_tuple[0]);
+                    String tuple = "";
                     String[] kvp = null;
 
                     do{
-                        String tuple = (String) ins.readObject();
+                        tuple = (String) ins.readObject();
                         kvp = tuple.split(":");
-                        if(Integer.parseInt(kvp[0]) == -1){
+                        if(tuple.equals("END")){
                             break;
                         }
                         //insert into new ns
                         ns.pairs.put(Integer.parseInt(kvp[0]),kvp[1]);
-                    }while(Integer.parseInt(kvp[0]) != -1);
+                    }while(true);
 
                     System.out.println(">_Successful Entry");
                     System.out.println(">_Range of IDs Managed: ["+id_tuple[0]+","+id);
