@@ -9,14 +9,16 @@ import java.util.Scanner;
 
 public class Bootstrap {
 
-    private NSConfig configuration;
-    private static ServerSocket server;
-    private static int bootstrap_conn_port;
-    private static ArrayList<Integer> server_list = new ArrayList<>();
-    HashMap<Integer, String> pairs = new HashMap<>();
+    NSConfig configuration;
+    ServerSocket server;
+    int bootstrap_conn_port;
+    ArrayList<Integer> server_list;
+    HashMap<Integer, String> pairs;
 
     // Default Constructor
     public Bootstrap(int id){
+        server_list = new ArrayList<>();
+        pairs = new HashMap<>();
         configuration = new NSConfig(id,bootstrap_conn_port);
         server_list.add(id);
     }
