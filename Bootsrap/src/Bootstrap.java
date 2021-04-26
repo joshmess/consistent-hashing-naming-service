@@ -37,8 +37,10 @@ public class Bootstrap {
         }
 
         // check successor
-        return "NOT FOUND";
-
+        Socket succ_sock = new Socket(configuration.successor_ip,configuration.successor_port);
+        ObjectInputStream ins = new ObjectInputStream(succ_sock.getInputStream());
+        ObjectOutputStream outs = new ObjectOutputStream(succ_sock.getOutputStream());
+        return "CHECKING NS";
     }
 
     // insert service for a key
