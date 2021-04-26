@@ -113,14 +113,14 @@ public class BootstrapDriver {
 
                         //add new highest id
                         bootstrap_ns.server_list.add(Integer.parseInt(ns_config[1]));
-                        /*
+                        
                         //set up conn with  succ
                         Socket succ_sock = new Socket(bootstrap_ns.configuration.successor_ip,bootstrap_ns.configuration.successor_port);
                         ObjectOutputStream succ_outs = new ObjectOutputStream(succ_sock.getOutputStream());
                         ObjectInputStream succ_ins = new ObjectInputStream(succ_sock.getInputStream());
-                        //send insert-after id ip port
-                        succ_outs.writeObject("insert-after "+ns_config[1]+" "+ns_config[2]+" "+ns_config[3]);
-                        */
+                        //send update-succ id ip port
+                        succ_outs.writeObject("update-succ "+ns_config[1]+" "+ns_config[2]+" "+ns_config[3]);
+                        
                         
                         
 
