@@ -41,19 +41,19 @@ public class BootstrapDriver {
 
             switch(ns_config[0]){
                 case "enter":
-                    
+                    int new_id = Integer.parseInt(ns_config[1]);
                     Collections.sort(bootstrap_ns.server_list);
                     // write back tuple
                     outs.writeObject(""+Inet4Address.getLocalHost().getHostAddress()+":"+bootstrap_conn_port);
                     String servers_visited = "0";
                     //create list of servers visited in format 'ns1,ns2,ns3...'
                     for (int id : bootstrap_ns.server_list) {
-                        if (Integer.parseInt(ns_config[1]) > id && id != 0) {
+                        if (new_id > id && id != 0) {
                             servers_visited += "," + id;
                         }
                     }
                     outs.writeObject(servers_visited);
-
+                    
                     if(bootstrap_ns.configuration.successor_id == 0){
                         bootstrap_ns.server_list.add(Integer.parseInt(ns_config[1]));
                         //bootstrap is the only server upon entry
@@ -82,12 +82,12 @@ public class BootstrapDriver {
                                 //write key:value
                                 outs.writeObject(""+i+":"+bootstrap_ns.pairs.get(i));
                                 //remove from bootstrap
-                                bootstrap_ns.pairs.remove(i);
+                                
                             }
                         }
                         //signal end of transfer
                         outs.writeObject("END");
-                    }else if(Collections.max(bootstrap_ns.server_list) < Integer.parseInt(ns_config[1])){
+                    }else if(Collections.max(bootstrap_ns.server_list) < new_id){
                         // new ns id greater than maximum server id
                         
                         //update bootstrap predecessor
@@ -101,14 +101,12 @@ public class BootstrapDriver {
                         outs.writeObject(""+Inet4Address.getLocalHost().getHostAddress()+":"+bootstrap_ns.configuration.successor_port);
                         //send succ_ip:succ_port
                         outs.writeObject(""+Inet4Address.getLocalHost().getHostAddress()+":"+4780);
-                        //send keys to succ
-                        
-                        
+                        //send keys to succ    
                         for(int i=Collections.max(bootstrap_ns.server_list)+1;i<=Integer.parseInt(ns_config[1]);i++){
                             if(bootstrap_ns.pairs.containsKey(i)){
                                 //write key:value
                                 outs.writeObject(""+i+":"+bootstrap_ns.pairs.get(i));
-                                bootstrap_ns.pairs.remove(i);
+                                
                             }
                         }
                         outs.writeObject("END");
@@ -126,6 +124,30 @@ public class BootstrapDriver {
                         
                         
 
+                    }else if(new_id < Collections.max(bootstrap_ns.server_list)){
+                        //insert in between bootstrap and ns
+
+                         //update bootstrap successor
+                         bootstrap_ns.configuration.successor_id = Integer.parseInt(ns_config[1]);
+                         bootstrap_ns.configuration.successor_ip = ns_config[2];
+                         bootstrap_ns.configuration.successor_port = Integer.parseInt(ns_config[3]);
+
+                        //send pred_id:succ_id
+                        outs.writeObject(""+bootstrap_ns.configuration.id+":"+bootstrap_ns.configuration.successor_id);
+                        //send pred_ip:pred_port
+                        outs.writeObject(""+Inet4Address.getLocalHost().getHostAddress()+":"+4780);
+                        //send succ_ip:succ_port
+                        outs.writeObject(""+Inet4Address.getLocalHost().getHostAddress()+":"+bootstrap_ns.configuration.successor_port);
+
+                        //send keys to succ    
+                        for(int i=0;i<=new_id;i++){
+                            if(bootstrap_ns.pairs.containsKey(i)){
+                                //write key:value
+                                outs.writeObject(""+i+":"+bootstrap_ns.pairs.get(i));
+                                bootstrap_ns.pairs.remove(i);
+                            }
+                        }
+                        outs.writeObject("END");
                     }
                     break;
 
