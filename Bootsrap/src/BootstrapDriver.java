@@ -57,6 +57,16 @@ public class BootstrapDriver {
                     if(bootstrap_ns.configuration.successor_id == 0){
                         //bootstrap is the only server upon entry
 
+                        //update BS successor
+                        bootstrap_ns.configuration.successor_id = Integer.parseInt(ns_config[1]);
+                        bootstrap_ns.configuration.successor_ip = ns_config[2];
+                        bootstrap_ns.configuration.successor_port = Integer.parseInt(ns_config[3]);
+
+                        //update BS predecessor
+                        bootstrap_ns.configuration.predecessor_id = Integer.parseInt(ns_config[1]);
+                        bootstrap_ns.configuration.predecessor_ip = ns_config[2];
+                        bootstrap_ns.configuration.predecessor_port = Integer.parseInt(ns_config[3]);
+
                         //send pred_id:succ_id
                         outs.writeObject(""+bootstrap_ns.configuration.id+":"+bootstrap_ns.configuration.id);
                         //send pred_ip:pred_port

@@ -54,7 +54,7 @@ public class NSCommandHandler extends Thread{
                 }
 
             }
-        }catch(IOException e){
+        }catch(IOException | ClassNotFoundException e){
             e.printStackTrace();
         }   
     }
