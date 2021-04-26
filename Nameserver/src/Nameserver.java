@@ -20,8 +20,8 @@ public class Nameserver {
 
         if(pairs.containsKey(key)){
             return pairs.get(key);
-        }
-        if(key > configuration.id){
+        }else{
+
             // check successor
             Socket succ_sock = new Socket(configuration.successor_ip,configuration.successor_port);
             ObjectInputStream ins = new ObjectInputStream(succ_sock.getInputStream());
@@ -36,10 +36,7 @@ public class Nameserver {
             System.out.println(">_[Server Visited]: "+result_list[1]);
             return result_list[0];
             
-
-
         }
-        return "NOT FOUND";
     }
 
 }
