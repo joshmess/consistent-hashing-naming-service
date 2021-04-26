@@ -82,7 +82,7 @@ public class NameserverDriver {
                     System.out.println(">_Successful Entry");
                     System.out.println(">_Predecessor ID: "+ns.configuration.predecessor_id);
                     System.out.println(">_Successor ID: "+ns.configuration.successor_id);
-                    System.out.println(">_Range of Keys Managed: ["+(id_tuple[0]+1)+","+id+"]");
+                    System.out.println(">_Range of Keys Managed: ("+id_tuple[0]+","+id+"]");
                     System.out.println(">_Servers Visited: ["+servers_visited+"]");
 
                     outs.close();
