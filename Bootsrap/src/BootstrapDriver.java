@@ -111,7 +111,7 @@ public class BootstrapDriver {
                                 bootstrap_ns.pairs.remove(i);
                             }
                         }
-                        succ_outs.writeObject("END");
+                        outs.writeObject("END");
 
                         //add new highest id
                         bootstrap_ns.server_list.add(Integer.parseInt(ns_config[1]));
