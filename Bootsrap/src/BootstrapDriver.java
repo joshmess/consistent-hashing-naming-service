@@ -82,7 +82,7 @@ public class BootstrapDriver {
                                 //write key:value
                                 outs.writeObject(""+i+":"+bootstrap_ns.pairs.get(i));
                                 //remove from bootstrap
-                                
+                                bootstrap_ns.pairs.remove(i);
                             }
                         }
                         //signal end of transfer
@@ -106,7 +106,7 @@ public class BootstrapDriver {
                             if(bootstrap_ns.pairs.containsKey(i)){
                                 //write key:value
                                 outs.writeObject(""+i+":"+bootstrap_ns.pairs.get(i));
-                                
+                                bootstrap_ns.pairs.remove(i);
                             }
                         }
                         outs.writeObject("END");
