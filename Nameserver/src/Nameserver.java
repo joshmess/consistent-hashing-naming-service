@@ -14,5 +14,16 @@ public class Nameserver {
         pairs = new HashMap<>();
         configuration = new NSConfig(id, conn_port);
     }
+    //implements ns lookup
+    public String lookup(int key){
+
+        if(pairs.containsKey(key)){
+            return pairs.get(key);
+        }
+        if(key > configuration.id){
+            return "CHECK SUCC";
+        }
+        return "NOT FOUND";
+    }
 
 }

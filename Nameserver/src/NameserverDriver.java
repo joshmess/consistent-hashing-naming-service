@@ -75,6 +75,10 @@ public class NameserverDriver {
                         ns.pairs.put(Integer.parseInt(kvp[0]),kvp[1]);
                     }while(true);
 
+                    //start NSCommandHandler
+                    NSCommandHandler cmd_thread = new NSCommandHandler(ns);
+                    cmd_thread.start();
+
                     System.out.println(">_Successful Entry");
                     System.out.println(">_Predecessor ID: "+ns.configuration.predecessor_id);
                     System.out.println(">_Successor ID: "+ns.configuration.successor_id);
