@@ -5,6 +5,24 @@ The Bootstrap Server Listens on port 4780.
 
 ### This project was done in its entirety by Josh, Alex, and Robert. We hereby state that we have not received unauthorized help of any form. 
 
+#### Compile BootstrapDriver (From '~/Bootstrap/src/'):
+```
+$ javac BootstrapDriver.java
+```
+#### Compile NameserverDriver (From '~/Nameserver/src/'):
+```
+$ javac NameserverDriver.java
+```
+
+#### Execute BootstrapDriver (From '~/Bootstrap/src/'):
+```
+$ java BootstrapDriver [BOOTSTRAP_NS_CONFIG_FILE]
+```
+#### Execute NameserverDriver (From '~/Nameserver/src/'):
+```
+$ java NameserverDriver [NS_CONFIG_FILE]
+```
+
 
 ## Contributions
 In order to push updates to the master branch, a pull request and an approving review from another contributor are required. This avoids conflicts and helps with overall repository organization.
