@@ -32,7 +32,6 @@ public class NSCommandHandler extends Thread{
 
                 String query = (String) ins.readObject();
                 String[] query_list = query.split(" ");
-                System.out.println("Servicing at NS: "+ query_list[0]);
 
                 switch(query_list[0]){
 
