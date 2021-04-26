@@ -103,7 +103,7 @@ public class BootstrapDriver {
                         outs.writeObject(""+Inet4Address.getLocalHost().getHostAddress()+":"+4780);
                         //send keys to succ
                         
-                        System.out.println(Collections.max(bootstrap_ns.server_list)+" **"+Integer.parseInt(ns_config[1]));
+                        
                         for(int i=Collections.max(bootstrap_ns.server_list)+1;i<=Integer.parseInt(ns_config[1]);i++){
                             if(bootstrap_ns.pairs.containsKey(i)){
                                 //write key:value
