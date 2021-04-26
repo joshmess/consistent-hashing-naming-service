@@ -76,8 +76,42 @@ public class BootstrapDriver {
                         }
                         //signal end of transfer
                         outs.writeObject("END");
-                    }
+                    }else if(Collections.max(bootstrap_ns.server_list) < Integer.parseInt(ns_config[1])){
+                        // new ns id greater than maximum server id
 
+
+                    }
+                    break;
+
+                case "update_pred":
+                    
+                    //take in new pred info
+                    String pred_info = (String) ins.readObject();
+                    String[] new_pred = pred_info.split(":");
+                    //reconfigure with new predecessor & successor information
+                    bootstrap_ns.configuration.reconfigure(bootstrap_ns.configuration.successor_port, Integer.parseInt(new_pred[2]), bootstrap_ns.configuration.successor_id, Integer.parseInt(new_pred[0]),bootstrap_ns.configuration.successor_ip, new_pred[1]);
+                    String tuple = "";
+                    String[] kvp = null;
+                    do{
+                        tuple = (String) ins.readObject();
+                        kvp = tuple.split(":");
+                        if(tuple.equals("END")){
+                            break;
+                        }
+                        //insert into new ns
+                        bootstrap_ns.pairs.put(Integer.parseInt(kvp[0]),kvp[1]);
+                    }while(true);
+                    
+                    break;
+
+                case "update_succ":
+                    //take in new succ info
+                    String succ_info = (String) ins.readObject();
+                    String[] new_succ = succ_info.split(":");
+                    //reconfigure with new predecessor & successor information
+                    bootstrap_ns.configuration.reconfigure(Integer.parseInt(new_succ[2]), bootstrap_ns.configuration.predecessor_port, Integer.parseInt(new_succ[0]), bootstrap_ns.configuration.predecessor_id,new_succ[1], bootstrap_ns.configuration.predecessor_ip);
+                    //once this is done, the exit is complete
+                    break;
             }
         }
 

@@ -76,7 +76,9 @@ public class NameserverDriver {
                     }while(true);
 
                     System.out.println(">_Successful Entry");
-                    System.out.println(">_Range of IDs Managed: ["+id_tuple[0]+","+id+"]");
+                    System.out.println(">_Predecessor ID: "+ns.configuration.predecessor_id);
+                    System.out.println(">_Successor ID: "+ns.configuration.successor_id);
+                    System.out.println(">_Range of Keys Managed: ["+id_tuple[0]+","+id+"]");
                     System.out.println(">_Servers Visited: ["+servers_visited+"]");
 
                     outs.close();
@@ -85,6 +87,39 @@ public class NameserverDriver {
 
                     break;
 
+                case "exit":
+                    //configure connection with successor
+                    Socket succ_sock = new sock(ns.configuration.successor_ip,ns.configuration.successor_port);
+                    ObjectOutputStream succ_outs = new ObjectOutputStream(succ_sock.getOutputStream());
+                    ObjectInputStream succ_ins = new ObjectInputStream(succ_sock.getInputStream());
+
+                    //tell successor about exit
+                    succ_outs.writeObject("update_pred");
+                    //send pred_id:pred_ip:pred_port
+                    succ_outs.writeObject(""+ns.configuration.predecessor_id+":"+ns.configuration.predecessor_ip+":"+ns.configuration.predecessor_port);
+                    
+                    //transfer all keys to successor
+                    for(int i=ns.configuration.predecessor_id;i<ns.configuration.id;i++){
+
+                        if(ns.pairs.containsKey(i)){
+                            //write key:value
+                            succ_outs.writeObject(""+i+":"+ns.pairs.get(i));
+                            ns.pairs.remove(i);
+                        }
+                    }
+                    succ_outs.writeObject("END");
+                    
+                    //configure connection with predecessor
+                    Socket pred_sock = new sock(ns.configuration.predecessor_ip,ns.configuration.predecessor_port);
+                    ObjectOutputStream pred_outs = new ObjectOutputStream(pred_sock.getOutputStream());
+                    ObjectInputStream pred_ins = new ObjectInputStream(pred_sock.getInputStream());
+                    succ_outs.writeObject("update_succ");
+                    //send succ_id:succ_ip:succ_port
+                    succ_outs.writeObject(""+ns.configuration.successor_id+":"+ns.configuration.successor_ip+":"+ns.configuration.successor_port);
+                    System.out.println(">_Successful Exit");
+                    System.out.println(">_Successor ID: "+ns.configuration.successor_id);
+                    System.out.println(">_Range of Keys Transferred: ["+ns.configuration.predecessor_id+","+ns.configuration.id+"]");
+        
                 default:
                     System.out.println(">_ Query Not Recognized.");
 
