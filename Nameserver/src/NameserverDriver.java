@@ -89,7 +89,7 @@ public class NameserverDriver {
 
                 case "exit":
                     //configure connection with successor
-                    Socket succ_sock = new sock(ns.configuration.successor_ip,ns.configuration.successor_port);
+                    Socket succ_sock = new Socket(ns.configuration.successor_ip,ns.configuration.successor_port);
                     ObjectOutputStream succ_outs = new ObjectOutputStream(succ_sock.getOutputStream());
                     ObjectInputStream succ_ins = new ObjectInputStream(succ_sock.getInputStream());
 
@@ -110,7 +110,7 @@ public class NameserverDriver {
                     succ_outs.writeObject("END");
                     
                     //configure connection with predecessor
-                    Socket pred_sock = new sock(ns.configuration.predecessor_ip,ns.configuration.predecessor_port);
+                    Socket pred_sock = new Socket(ns.configuration.predecessor_ip,ns.configuration.predecessor_port);
                     ObjectOutputStream pred_outs = new ObjectOutputStream(pred_sock.getOutputStream());
                     ObjectInputStream pred_ins = new ObjectInputStream(pred_sock.getInputStream());
                     succ_outs.writeObject("update_succ");

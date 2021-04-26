@@ -60,9 +60,9 @@ public class BootstrapDriver {
                         //send pred_id:succ_id
                         outs.writeObject(""+bootstrap_ns.configuration.id+":"+bootstrap_ns.configuration.id);
                         //send pred_ip:pred_port
-                        outs.writeObject(""+Inet4Address.getLocalHost().getHostAddress()+":"+bootstrap_ns.configuration.conn_port);
+                        outs.writeObject(""+Inet4Address.getLocalHost().getHostAddress()+":"+4780);
                         //send succ_ip:succ_port
-                        outs.writeObject(""+Inet4Address.getLocalHost().getHostAddress()+":"+bootstrap_ns.configuration.conn_port);
+                        outs.writeObject(""+Inet4Address.getLocalHost().getHostAddress()+":"+4780);
 
                         // transfer keys from range [0,id]
                         for(int i=0;i<Integer.parseInt(ns_config[1]);i++){
