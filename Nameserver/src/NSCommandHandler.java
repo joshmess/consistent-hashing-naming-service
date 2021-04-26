@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
@@ -19,38 +20,42 @@ public class NSCommandHandler extends Thread{
 
     public void run(){
 
-        int port = ns.configuration.conn_port;
-        ss = new ServerSocket(port);
+        try{
+            int port = ns.configuration.conn_port;
+            ss = new ServerSocket(port);
 
-        while(true){
-            //configure incoming connection
-            sock = ss.accept();
-            ObjectOutputStream outs = new ObjectOutputStream(sock.getOutputStream());
-            ObjectInputStream ins = new ObjectInputStream(sock.getInputStream());
+            while(true){
+                //configure incoming connection
+                sock = ss.accept();
+                ObjectOutputStream outs = new ObjectOutputStream(sock.getOutputStream());
+                ObjectInputStream ins = new ObjectInputStream(sock.getInputStream());
 
-            String query = (String) ins.readObject();
-            String[] query_list = query.split(" ");
-            System.out.println("Servicing at NS: "+ query_list[0]);
+                String query = (String) ins.readObject();
+                String[] query_list = query.split(" ");
+                System.out.println("Servicing at NS: "+ query_list[0]);
 
-            switch(query_list[0]){
+                switch(query_list[0]){
 
-                case "lookup":
-                    //lookup in ns
-                    //read in servers visited
-                    String servers_visited = ins.readObject();
-                    //parse key from query
-                    int key = Integer.parseInt(query_list[1]);
-                    String result = ns.lookup(key);
-                   
-                    if(!result.equals("NOT FOUND") && !result.equals("CHECK SUCC")){
-                        servers_visited += ","+ns.configuration.id;
-                    }
-                    //send value:ns1,ns2,ns3,...
-                    outs.writeObject(""+result+":"+servers_visited);
-                    break;
+                    case "lookup":
+                        //lookup in ns
+                        //read in servers visited
+                        String servers_visited = (String) ins.readObject();
+                        //parse key from query
+                        int key = Integer.parseInt(query_list[1]);
+                        String result = ns.lookup(key);
+                    
+                        if(!result.equals("NOT FOUND") && !result.equals("CHECK SUCC")){
+                            servers_visited += ","+ns.configuration.id;
+                        }
+                        //send value:ns1,ns2,ns3,...
+                        outs.writeObject(""+result+":"+servers_visited);
+                        break;
+
+                }
 
             }
-
-        }
+        }catch(IOException e){
+            e.printStackTrace();
+        }   
     }
 }
