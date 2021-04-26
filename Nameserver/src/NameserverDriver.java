@@ -123,7 +123,7 @@ public class NameserverDriver {
                     System.out.println(">_Successful Exit");
                     System.out.println(">_Successor ID: "+ns.configuration.successor_id);
                     System.out.println(">_Range of Keys Transferred: ["+ns.configuration.predecessor_id+","+ns.configuration.id+"]");
-        
+                    break;
                 default:
                     System.out.println(">_ Query Not Recognized.");
 
