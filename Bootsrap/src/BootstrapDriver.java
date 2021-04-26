@@ -41,7 +41,7 @@ public class BootstrapDriver {
 
             switch(ns_config[0]){
                 case "enter":
-                    bootstrap_ns.server_list.add(Integer.parseInt(ns_config[1]));
+                    
                     Collections.sort(bootstrap_ns.server_list);
                     // write back tuple
                     outs.writeObject(""+Inet4Address.getLocalHost().getHostAddress()+":"+bootstrap_conn_port);
@@ -55,6 +55,7 @@ public class BootstrapDriver {
                     outs.writeObject(servers_visited);
 
                     if(bootstrap_ns.configuration.successor_id == 0){
+                        bootstrap_ns.server_list.add(Integer.parseInt(ns_config[1]));
                         //bootstrap is the only server upon entry
 
                         //update BS successor
@@ -88,7 +89,31 @@ public class BootstrapDriver {
                         outs.writeObject("END");
                     }else if(Collections.max(bootstrap_ns.server_list) < Integer.parseInt(ns_config[1])){
                         // new ns id greater than maximum server id
+                        
+                        //update bootstrap predecessor
+                        bootstrap_ns.configuration.predecessor_id = Integer.parseInt(ns_config[1]);
+                        bootstrap_ns.configuration.predecessor_ip = ns_config[2];
+                        bootstrap_ns.configuration.predecessor_port = Integer.parseInt(ns_config[3]);
 
+                        //set up conn with  succ
+                        Socket succ_sock = new Socket(bootstrap_ns.configuration.successor_ip,bootstrap_ns.configuration.successor_port);
+                        ObjectOutputStream succ_outs = new ObjectOutputStream(succ_sock.getOutputStream());
+                        ObjectInputStream succ_ins = new ObjectInputStream(succ_sock.getInputStream());
+                        //send insert-after id ip port
+                        succ_outs.writeObject("insert-after "+ns_config[1]+" "+ns_config[2]+" "+ns_config[3]);
+
+                        //send keys to succ
+                        for(int i=Collections.max(bootstrap_ns.server_list)+1;i<=Integer.parseInt(ns_config[1]);i++){
+                            if(bootstrap_ns.pairs.containsKey(i)){
+                                //write key:value
+                                succ_outs.writeObject(""+i+":"+bootstrap_ns.pairs.get(i));
+                                bootstrap_ns.pairs.remove(i);
+                            }
+                        }
+                        succ_outs.writeObject("END");
+
+                        //add new highest id
+                        bootstrap_ns.server_list.add(Integer.parseInt(ns_config[1]));
 
                     }
                     break;
