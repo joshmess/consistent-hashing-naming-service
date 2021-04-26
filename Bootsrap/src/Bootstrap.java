@@ -37,7 +37,6 @@ public class Bootstrap {
         }
 
         // check successor
-        System.out.println(configuration.successor_ip+":"+configuration.successor_port);
         Socket succ_sock = new Socket(configuration.successor_ip,configuration.successor_port);
         ObjectInputStream ins = new ObjectInputStream(succ_sock.getInputStream());
         ObjectOutputStream outs = new ObjectOutputStream(succ_sock.getOutputStream());
@@ -69,7 +68,7 @@ public class Bootstrap {
     // delete service for a key
     public void delete(int key) throws UnknownHostException, IOException, ClassNotFoundException {
 
-        //if key in bootstrap server then dekete
+        //if key in bootstrap server then delete
         if(key > Collections.max(server_list)) {
             System.out.println("[Server Visited] ID:0 (Bootstrap-NS)");
             System.out.println(">_Key Deleted Successfully");

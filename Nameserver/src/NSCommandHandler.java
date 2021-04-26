@@ -3,6 +3,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.Inet4Address;
 
 /*
 * This class services requests at nameservers other than the Bootstrap.
@@ -65,6 +66,8 @@ public class NSCommandHandler extends Thread{
                         succ_outs.writeObject("update_pred");
                         //write id ip port
                         succ_outs.writeObject(""+ns.configuration.id+" "+Inet4Address.getLocalHost().getHostAddress()+" "+ns.configuration.conn_port);
+                        String tuple = "";
+                        String[] kvp;
 
                         do{
                             tuple = (String) ins.readObject();
@@ -92,8 +95,7 @@ public class NSCommandHandler extends Thread{
                             if(tuple.equals("END")){
                                 break;
                             }
-                            //forward to new succesor
-                            succ_outs.writeObject(tuple);
+                            ns.pairs.put(Integer.parseInt(kvp[0]),kvp[1]);
                         }while(true);
                         break;
 
