@@ -32,15 +32,26 @@ public class Bootstrap {
 
         // check for key
         if(pairs.containsKey(key)) {
-            System.out.println(">_[Server Visited] ID:0 (Bootstrap-NS)");
+            System.out.println(">_[Server Visited]: 0 (Bootstrap-NS Only)");
             return (pairs.get(key));
         }
 
         // check successor
+        System.out.println(configuration.successor_ip+":"+configuration.successor_port);
         Socket succ_sock = new Socket(configuration.successor_ip,configuration.successor_port);
         ObjectInputStream ins = new ObjectInputStream(succ_sock.getInputStream());
         ObjectOutputStream outs = new ObjectOutputStream(succ_sock.getOutputStream());
-        return "CHECKING NS";
+        
+        //write lookup key
+        outs.writeObject("lookup "+key);
+        //write string representing list of visited servers (BS only)
+        outs.writeObject("0");
+
+        String result = (String)ins.readObject();
+        String[] result_list = result.split(":");
+        System.out.println(">_[Server Visited]: "+result_list[1]);
+        
+        return result_list[0];
     }
 
     // insert service for a key
