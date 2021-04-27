@@ -32,36 +32,43 @@ public class Bootstrap {
 
         // check for key
         if(pairs.containsKey(key)) {
-            System.out.println(">_[Server Visited]: 0 (Bootstrap-NS Only)");
+            System.out.println(">_[Servers Visited]: 0 (Bootstrap-NS Only)");
             return (pairs.get(key));
         }
 
-        // check successor
+        // connect to succ
         Socket succ_sock = new Socket(configuration.successor_ip, configuration.successor_port);
 		ObjectInputStream ins = new ObjectInputStream(succ_sock.getInputStream());
 		ObjectOutputStream outs = new ObjectOutputStream(succ_sock.getOutputStream());
+        //write 'lookup key' then 0 for this server
 		outs.writeObject("lookup "+key);
 		outs.writeObject("0");
-		String value = (String) inputStreamFwd.readObject();
-		String servers_visited = (String) inputStreamFwd.readObject();
-		int count = 0;
+        //read value and then server list
+		String value = (String) ins.readObject();
+		String servers_visited = (String) ins.readObject();
+        //sort ids for printing
+        Collections.sort(server_list);
+        //count servers visited
+		int numserv = 0;
 		for(int i = 0; i < servers_visited.length(); i++)
 		{
-			if(servers_visited.charAt(i) == '-')
-				count++;
+			if(servers_visited.charAt(i) == '>')
+				numserv++;
 		}
-		Collections.sort(server_list);
-		System.out.println(">_[Server Visited]: ");
-		for(int id : serverIDS) {
-			if(count-1 < 0)
+		
+		System.out.print(">_[Servers Visited]: ");
+        //print correct ids
+		for(int id : server_list) {
+			if(numserv-1 < 0)
 				System.out.println(id);
 			else
 				System.out.print(id + " >> ");
 				
-			count--;
-			if(count< 0)
+			numserv--;
+			if(numserv < 0)
 				break;
 		}
+        System.out.println();
 		succ_sock.close();
 		return value;
     }

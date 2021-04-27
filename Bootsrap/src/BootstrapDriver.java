@@ -29,44 +29,56 @@ public class BootstrapDriver {
 
         UIThread bootstrap_ui = new UIThread(bootstrap_ns);
         bootstrap_ui.start();
+        int highest_ns_id = 0;
 
         while(true){
 
             Socket ns_socket = ss.accept();
-
+            ///open connection with new ns
             ObjectInputStream ins = new ObjectInputStream(ns_socket.getInputStream());
             ObjectOutputStream outs = new ObjectOutputStream(ns_socket.getOutputStream());
             String nameserver_details = (String) ins.readObject();
             String[] ns_config = nameserver_details.split(":");
+            int new_ns_id = Integer.parseInt(ns_config[1]);
+            int new_ns_port = -1;
+            String new_ns_ip = "";
+
+            //take in new ns details if not one of these commands
+            if(!ns_config[0].equals("update_pred") && !ns_config[0].equals("updte_succ") && !ns_config[0].equals("new_highest_id")) {
+                    new_ns_id = Integer.parseInt(ns_config[1]);
+                    new_ns_ip = ns_config[2];
+                    new_ns_port = Integer.parseInt(nameServerDetailsStr[3]);
+            }
+            
 
             switch(ns_config[0]){
                 case "enter":
-                    int new_id = Integer.parseInt(ns_config[1]);
+                    bootstrap_ns.server_list.add(new_ns_id);
                     Collections.sort(bootstrap_ns.server_list);
                     // write back tuple
                     outs.writeObject(""+Inet4Address.getLocalHost().getHostAddress()+":"+bootstrap_conn_port);
                     String servers_visited = "0";
                     //create list of servers visited in format 'ns1,ns2,ns3...'
                     for (int id : bootstrap_ns.server_list) {
-                        if (new_id > id && id != 0) {
-                            servers_visited += "," + id;
+                        if (new_ns_id > id && id != 0) {
+                            servers_visited += " > " + id;
                         }
                     }
                     outs.writeObject(servers_visited);
                     
                     if(bootstrap_ns.configuration.successor_id == 0){
-                        bootstrap_ns.server_list.add(Integer.parseInt(ns_config[1]));
+
+                        
                         //bootstrap is the only server upon entry
 
                         //update BS successor
-                        bootstrap_ns.configuration.successor_id = Integer.parseInt(ns_config[1]);
-                        bootstrap_ns.configuration.successor_ip = ns_config[2];
-                        bootstrap_ns.configuration.successor_port = Integer.parseInt(ns_config[3]);
-
+                        bootstrap_ns.configuration.successor_id = new_ns_id;
+                        bootstrap_ns.configuration.successor_ip = new_ns_ip;
+                        bootstrap_ns.configuration.successor_port = new_ns_port;
                         //update BS predecessor
-                        bootstrap_ns.configuration.predecessor_id = Integer.parseInt(ns_config[1]);
-                        bootstrap_ns.configuration.predecessor_ip = ns_config[2];
-                        bootstrap_ns.configuration.predecessor_port = Integer.parseInt(ns_config[3]);
+                        bootstrap_ns.configuration.predecessor_id = new_ns_id;
+                        bootstrap_ns.configuration.predecessor_ip = new_ns_ip;
+                        bootstrap_ns.configuration.predecessor_port = new_ns_port;
 
                         //send pred_id:succ_id
                         outs.writeObject(""+bootstrap_ns.configuration.id+":"+bootstrap_ns.configuration.id);
@@ -91,18 +103,40 @@ public class BootstrapDriver {
                         // new ns id greater than maximum server id
                         
                         //update bootstrap predecessor
-                        bootstrap_ns.configuration.predecessor_id = Integer.parseInt(ns_config[1]);
-                        bootstrap_ns.configuration.predecessor_ip = ns_config[2];
-                        bootstrap_ns.configuration.predecessor_port = Integer.parseInt(ns_config[3]);
+                        bootstrap_ns.configuration.predecessor_id = new_ns_id;
+                        bootstrap_ns.configuration.predecessor_ip = new_ns_ip;
+                        bootstrap_ns.configuration.predecessor_port = new_ns_port;
+
+                        //store succ info
+                        int nxt_ip = bootstrap_ns.configuration.successor_ip;
+                        int nxt_port = bootstrap_ns.configuration.successor_port;
+
+                        Socket nxt_sock = new Socket(nxt_ip,nxt_port);
+                        ObjectOutputStream nxt_outs = new ObjectOutputStream(nxt_sock.getOutputStream());
+                        ObjectInputStream nxt_ins = new ObjectInputStream(nxt_sock.getInputStream());
+                        nxt_outs.writeObject("highest-entry "+new_ns_id +" " + new_ns_ip + " " + new_ns_port);
+
+                        //read in pred_id:succ_id-
+                        String pred_succ_id = (String) nxt_ins.readObject();
+                        String[] id_tuple = pred_succ_id.split(":");
+
+                        //read in pred_ip:pred_port
+                        String pred_info = (String) nxt_ins.readObject();
+                        String[] pred_tuple = pred_info.split(":");
+
+                        //read in succ_ip:succ_port
+                        String succ_info = (String) nxt_ins.readObject();
+                        String[] succ_tuple = succ_info.split(":");
 
                         //send pred_id:succ_id
-                        outs.writeObject(""+bootstrap_ns.configuration.successor_id+":"+bootstrap_ns.configuration.id);
+                        outs.writeObject(""+id_tuple[0]+":"+id_tuple[1]);
                         //send pred_ip:pred_port
-                        outs.writeObject(""+Inet4Address.getLocalHost().getHostAddress()+":"+bootstrap_ns.configuration.successor_port);
+                        outs.writeObject(""+pred_tuple[0]+":"+pred_tuple[1]);
                         //send succ_ip:succ_port
-                        outs.writeObject(""+Inet4Address.getLocalHost().getHostAddress()+":"+4780);
+                        outs.writeObject(""+succ_tuple[0]+":"+succ_tuple[1]);
+
                         //send keys to succ    
-                        for(int i=Collections.max(bootstrap_ns.server_list)+1;i<=Integer.parseInt(ns_config[1]);i++){
+                        for(int i=highest_ns_id;i< new_ns_id;i++){
                             if(bootstrap_ns.pairs.containsKey(i)){
                                 //write key:value
                                 outs.writeObject(""+i+":"+bootstrap_ns.pairs.get(i));
@@ -110,44 +144,11 @@ public class BootstrapDriver {
                             }
                         }
                         outs.writeObject("END");
+       
 
-                        //add new highest id
-                        bootstrap_ns.server_list.add(Integer.parseInt(ns_config[1]));
-                        
-                        //set up conn with  succ
-                        Socket succ_sock = new Socket(bootstrap_ns.configuration.successor_ip,bootstrap_ns.configuration.successor_port);
-                        ObjectOutputStream succ_outs = new ObjectOutputStream(succ_sock.getOutputStream());
-                        ObjectInputStream succ_ins = new ObjectInputStream(succ_sock.getInputStream());
-                        //send update-succ id ip port
-                        succ_outs.writeObject("update-succ "+ns_config[1]+" "+ns_config[2]+" "+ns_config[3]);
-                        
-                        
-                        
-
-                    }else if(new_id < Collections.max(bootstrap_ns.server_list)){
+                    }else{
                         //insert in between bootstrap and ns
 
-                         //update bootstrap successor
-                         bootstrap_ns.configuration.successor_id = Integer.parseInt(ns_config[1]);
-                         bootstrap_ns.configuration.successor_ip = ns_config[2];
-                         bootstrap_ns.configuration.successor_port = Integer.parseInt(ns_config[3]);
-
-                        //send pred_id:succ_id
-                        outs.writeObject(""+bootstrap_ns.configuration.id+":"+bootstrap_ns.configuration.successor_id);
-                        //send pred_ip:pred_port
-                        outs.writeObject(""+Inet4Address.getLocalHost().getHostAddress()+":"+4780);
-                        //send succ_ip:succ_port
-                        outs.writeObject(""+Inet4Address.getLocalHost().getHostAddress()+":"+bootstrap_ns.configuration.successor_port);
-
-                        //send keys to succ    
-                        for(int i=0;i<=new_id;i++){
-                            if(bootstrap_ns.pairs.containsKey(i)){
-                                //write key:value
-                                outs.writeObject(""+i+":"+bootstrap_ns.pairs.get(i));
-                                bootstrap_ns.pairs.remove(i);
-                            }
-                        }
-                        outs.writeObject("END");
                     }
                     break;
 

@@ -35,6 +35,55 @@ public class NSCommandHandler extends Thread{
                 String[] query_list = query.split(" ");
 
                 switch(query_list[0]){
+                   
+                    case "highest-entry":
+                        //ns entering with highest id
+                        int new_ns_id = Integer.parseInt(query_list[1]);
+                        String new_ns_ip  = query_list[2];
+                        int new_ns_port = Integer.parseInt(query_list[3]);
+
+                        //store succ info
+                        String nxt_ip = ns.configuration.successor_ip;
+                        int nxt_port = ns.configuration.successor_port;
+
+                        //if new id higher than ns and succ is not bootstrap
+                        if(ns.configuration.successor_id != 0 && new_ns_id > ns.configuration.id){
+                            Socket  nxt_sock = new Socket(nxt_ip,nxt_port);
+                            ObjectOutputStream nxt_outs = new ObjectOutputStream(nxt_sock.getOutputStream());
+                            ObjectInputStream nxt_ins = new ObjectInputStream(nxt_sock.getInputStream());
+                            nxt_outs.writeObject("highest-entry "+new_ns_id +" " + new_ns_ip + " " + new_ns_port);
+
+                            //read in pred_id:succ_id-
+                            String pred_succ_id = (String) nxt_ins.readObject();
+                            String[] id_tuple = pred_succ_id.split(":");
+
+                            //read in pred_ip:pred_port
+                            String pred_info = (String) nxt_ins.readObject();
+                            String[] pred_tuple = pred_info.split(":");
+
+                            //read in succ_ip:succ_port
+                            String succ_info = (String) nxt_ins.readObject();
+                            String[] succ_tuple = succ_info.split(":");
+
+                            //send pred_id:succ_id
+                            outs.writeObject(""+id_tuple[0]+":"+id_tuple[1]);
+                            //send pred_ip:pred_port
+                            outs.writeObject(""+pred_tuple[0]+":"+pred_tuple[1]);
+                            //send succ_ip:succ_port
+                            outs.writeObject(""+succ_tuple[0]+":"+succ_tuple[1]);
+                        }else{
+                            //succ is bootstrap --> dont read, just write back
+
+                            //send pred_id:succ_id
+                            outs.writeObject(""+ns.configuration.id+":"+ns.configuration.successor_id);
+                            //send pred_ip:pred_port
+                            outs.writeObject(""+Inet4Address.getLocalHost().getHostAddress()+":"+ns.configuration.conn_port);
+                            //send succ_ip:succ_port
+                            outs.writeObject(""+nxt_ip+":"+nxt_port);
+
+                            ns.configuration.reconfigure(new_ns_port, ns.configuration.predecessor_port, new_ns_id, ns.configuration.predecessor_id, new_ns_ip, Inet4Address.getLocalHost().getHostAddress());
+                        }
+                        break;
 
                     case "lookup":
                         
@@ -43,9 +92,9 @@ public class NSCommandHandler extends Thread{
                         //lookup in ns
 					    String[] value = ns.lookup(key,server_list).split(" ");	
 					    if(value.length > 1)
-						    server_list = server_list.concat("->"+value[1]);
+						    server_list = server_list.concat(" > "+value[1]);
 					    else
-						    server_list = server_list.concat("->"+ns.configuration.id);
+						    server_list = server_list.concat(" > "+ns.configuration.id);
 					    outs.writeObject(value[0]);
 					    outs.writeObject(server_list);
 					    break;
