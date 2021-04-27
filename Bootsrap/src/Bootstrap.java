@@ -99,7 +99,7 @@ public class Bootstrap {
             System.out.println(">_[Servers Visited]: "  );
             int final_id = -1;
             for(int id : server_list) {
-                if(count <= 0){
+                if(servcount <= 0){
                     System.out.println(id);
                     final_id = id;
                 }else{
@@ -107,7 +107,7 @@ public class Bootstrap {
                 }
                     
                 servcount--;
-                if(count< 0)
+                if(servcount< 0)
                     break;
             }
             System.out.println(">_Item inserted at NS-"+final_id);
