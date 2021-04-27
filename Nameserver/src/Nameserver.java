@@ -39,7 +39,7 @@ public class Nameserver {
 			return value+" "+new_servers;
         
         }
-        return ">_No Key Found";
+        return ">_404NotFound";
     }
     public String insert(int key, String value) throws UnknownHostException, IOException,ClassNotFoundException{
 
