@@ -37,14 +37,71 @@ public class NSCommandHandler extends Thread{
 
                 switch(query_list[0]){
 
+                    case "lookup":
+                        
+                    int key = Integer.parseInt(query_list[1]);
+                    String server_list = (String) ins.readObject();
+                    //lookup in ns
+                    String[] result = ns.lookup(key,server_list).split(" ");	
+                    
+                    if(result.length == 2){
+                        //if value not found --> add id & next server found
+                        server_list = server_list.concat(" > "+ns.configuration.id + " > " + result[1]);
+                    }else{
+                        //value, found --> add id
+                        server_list = server_list.concat(" > "+ns.configuration.id);
+                    }
+                        
+                    outs.writeObject(result[0]);
+                    outs.writeObject(server_list);
+                    break;
+                    
                     case "insert":
                         //insert into ns or succ
                         int key_to_insert = Integer.parseInt(query_list[1]);
                         String value_to_insert = query_list[2];
 
-                        String result = ns.insert(key_to_insert, value_to_insert);
-                        outs.writeObject(ns.configuration.id + " > " + result);
+                        String ins_result = ns.insert(key_to_insert, value_to_insert);
+                        outs.writeObject(ns.configuration.id + " > " + ins_result);
                         break;
+
+                    case "middle-entry":
+                        //ns entering in between other nameservers
+                        int entering_id = Integer.parseInt(query_list[1]);
+                        String entering_ip  = query_list[2];
+                        int entering_port = Integer.parseInt(query_list[3]);
+
+                        //middle entry BASE CASE
+                        if(ns.configuration.id > entering_id){
+                            //insert new nameserver now
+
+                            //send pred_id:succ_id
+                            outs.writeObject(""+ns.configuration.predecessor_id+":"+ns.configuration.id);
+                            //send pred_ip:pred_port
+                            outs.writeObject(""+Inet4Address.getLocalHost().getHostAddress()+":"+ns.configuration.predecessor_port);
+                            //send succ_ip:succ_port
+                            outs.writeObject(""+Inet4Address.getLocalHost().getHostAddress()+":"+ns.configuration.conn_port);
+                        
+        
+                             //send keys to succ    
+                            for(int i=ns.configuration.predecessor_id;i< entering_id;i++){
+                                if(ns.pairs.containsKey(i)){
+                                    //write key:value
+                                    outs.writeObject(""+i+":"+ns.pairs.get(i));
+                                    ns.pairs.remove(i);
+                                }
+                            }
+                            outs.writeObject("END");
+
+                            //update this ns
+                            ns.configuration.predecessor_id = entering_id;
+                            ns.configuration.predecessor_ip = entering_ip;
+                            ns.configuration.predecessor_port = entering_port;
+
+                        }
+                        //more than one hop??
+
+                        
 
                     case "highest-entry":
                         //ns entering with highest id
@@ -95,20 +152,7 @@ public class NSCommandHandler extends Thread{
                         }
                         break;
 
-                    case "lookup":
-                        
-                        int key = Integer.parseInt(query_list[1]);
-					    String server_list = (String) ins.readObject();
-                        //lookup in ns
-					    String[] value = ns.lookup(key,server_list).split(" ");	
-					    if(value.length > 1)
-						    server_list = server_list.concat(" > "+ns.configuration.id + " > " + value[1]);
-					    else
-						    server_list = server_list.concat(" > "+ns.configuration.id);
-                            
-					    outs.writeObject(value[0]);
-					    outs.writeObject(server_list);
-					    break;
+                   
                     case "update_succ":
                         //new ns entry
                         

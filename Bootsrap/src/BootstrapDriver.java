@@ -157,7 +157,40 @@ public class BootstrapDriver {
                     }else{
                         //insert in between bootstrap and ns
 
+                        //connect to successor
+                        Socket succ_sock = new Socket(bootstrap_ns.configuration.successor_ip,bootstrap_ns.configuration.successor_port);
+                        ObjectInputStream succ_ins = new ObjectInputStream(succ_sock.getInputStream());
+						ObjectOutputStream succ_outs = new ObjectOutputStream(succ_sock.getOutputStream());
+
+                        succ_outs.writeObject("middle-entry "+new_ns_id + " "+new_ns_ip+ " " + new_ns_port);
+
+                        //read in pred_id:succ_id-
+                        String pred_succ_id = (String) nxt_ins.readObject();
+                        String[] id_tuple = pred_succ_id.split(":");
+
+                        //read in pred_ip:pred_port
+                        String pred_info = (String) nxt_ins.readObject();
+                        String[] pred_tuple = pred_info.split(":");
+
+                        //read in succ_ip:succ_port
+                        String succ_info = (String) nxt_ins.readObject();
+                        String[] succ_tuple = succ_info.split(":");
+                        
+                        String tuple = "";
+                        String[] kvp;
+                        //read in pairs
+                        do{
+                            tuple = (String) ins.readObject();
+                            kvp = tuple.split(":");
+                            if(tuple.equals("END")){
+                                break;
+                            }
+                            //forward to new entry
+                            ns.pairs.put(Integer.parseInt(kvp[0]),kvp[1]);
+                        }while(true);
+                        succ_sock.close();
                     }
+
                     break;
 
                 case "update_pred":
