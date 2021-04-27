@@ -47,6 +47,7 @@ public class NameserverDriver {
                     //read in 'ns1,ns2,ns3...'
                     String servers_visited = (String) ins.readObject();
 
+                    //enter if statement
 
                     //read in pred_id:succ_id
                     String pred_succ_id = (String) ins.readObject();
@@ -60,6 +61,7 @@ public class NameserverDriver {
                     String succ_info = (String) ins.readObject();
                     String[] succ_tuple = succ_info.split(":");
 
+                    //reconfigure ns
                     ns.configuration.id = id;
                     ns.configuration.reconfigure(Integer.parseInt(succ_tuple[1]),Integer.parseInt(pred_tuple[1]),Integer.parseInt(id_tuple[1]),Integer.parseInt(id_tuple[0]),succ_tuple[0],pred_tuple[0]);
                     String tuple = "";

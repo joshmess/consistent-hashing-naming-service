@@ -32,37 +32,87 @@ public class Bootstrap {
 
         // check for key
         if(pairs.containsKey(key)) {
-            System.out.println(">_[Server Visited]: 0 (Bootstrap-NS Only)");
+            System.out.println(">_[Servers Visited]: 0 (Bootstrap-NS Only)");
             return (pairs.get(key));
         }
 
-        // check successor
-        Socket succ_sock = new Socket(configuration.successor_ip,configuration.successor_port);
-        ObjectInputStream ins = new ObjectInputStream(succ_sock.getInputStream());
-        ObjectOutputStream outs = new ObjectOutputStream(succ_sock.getOutputStream());
-        
-        //write lookup key
-        outs.writeObject("lookup "+key);
-        //write string representing list of visited servers (BS only)
-        outs.writeObject("0");
-
-        String result = (String)ins.readObject();
-        String[] result_list = result.split(":");
-        System.out.println(">_[Server Visited]: "+result_list[1]);
-        
-        return result_list[0];
+        // connect to succ
+        Socket succ_sock = new Socket(configuration.successor_ip, configuration.successor_port);
+		ObjectInputStream ins = new ObjectInputStream(succ_sock.getInputStream());
+		ObjectOutputStream outs = new ObjectOutputStream(succ_sock.getOutputStream());
+        //write 'lookup key' then 0 for this server
+		outs.writeObject("lookup "+key);
+		outs.writeObject("0");
+        //read value and then server list
+		String value = (String) ins.readObject();
+		String servers_visited = (String) ins.readObject();
+        //sort ids for printing
+        Collections.sort(server_list);
+        //count servers visited
+		int numserv = 0;
+		for(int i = 0; i < servers_visited.length(); i++)
+		{
+			if(servers_visited.charAt(i) == '>')
+				numserv++;
+		}
+		
+		System.out.print(">_[Servers Visited]: ");
+        //print correct ids
+		for(int id : server_list) {
+			if(numserv-1 < 0)
+				System.out.println(id);
+			else
+				System.out.print(id + " >> ");
+				
+			numserv--;
+			if(numserv < 0)
+				break;
+		}
+        System.out.println();
+		succ_sock.close();
+		return value;
     }
 
     // insert service for a key
     public void insert(int key, String value) throws IOException, ClassNotFoundException {
 
         if(key > Collections.max(server_list)) {
-            System.out.println(">_[Server Visited] ID:0 (Bootstrap-NS)");
+            System.out.println(">_[Servers Visited] ID:0 (Bootstrap-NS)");
             System.out.println(">_Key Inserted Successfully");
             pairs.put(key,value);
+        }else{
+            Collections.sort(server_list);
+            //check successor
+            Socket nxt_sock = new Socket(configuration.successor_ip,configuration.successor_port);
+            ObjectInputStream nxt_ins = new ObjectInputStream(nxt_sock.getInputStream());
+            ObjectOutputStream nxt_outs = new ObjectOutputStream(nxt_sock.getOutputStream());
+            //write insert key value
+            nxt_outs.writeObject("insert "+ key + " " + value);
+            String servers_visited = (String) nxt_ins.readObject();
+            int servcount = 0;
+            //iterate over servers that should be displayed
+            for(int i = 0; i < servers_visited.length(); i++)
+            {
+                if(servers_visited.charAt(i) == '>')
+                    servcount++;
+            }
+            System.out.println(">_[Servers Visited]: "  );
+            int final_id = -1;
+            for(int id : server_list) {
+                if(servcount <= 0){
+                    System.out.println(id);
+                    final_id = id;
+                }else{
+                    System.out.print(id + " >> ");
+                }
+                    
+                servcount--;
+                if(servcount< 0)
+                    break;
+            }
+            System.out.println(">_Item inserted at NS-"+final_id);
+            nxt_sock.close();
         }
-
-        // insert in successor?
     }
 
     // delete service for a key
