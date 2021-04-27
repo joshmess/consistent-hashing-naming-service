@@ -33,9 +33,19 @@ public class NSCommandHandler extends Thread{
 
                 String query = (String) ins.readObject();
                 String[] query_list = query.split(" ");
+               
 
                 switch(query_list[0]){
-                   
+
+                    case "insert":
+                        //insert into ns or succ
+                        int key_to_insert = Integer.parseInt(query_list[1]);
+                        String value_to_insert = query_list[2];
+
+                        String result = ns.insert(key_to_insert, value_to_insert);
+                        outs.writeObject(ns.configuration.id + " > " + result);
+                        break;
+
                     case "highest-entry":
                         //ns entering with highest id
                         int new_ns_id = Integer.parseInt(query_list[1]);

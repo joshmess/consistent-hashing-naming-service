@@ -1,4 +1,6 @@
 import java.net.Socket;
+import java.net.UnknownHostException;
+import java.security.DrbgParameters.NextBytes;
 import java.util.HashMap;
 import java.io.*;
 
@@ -38,6 +40,26 @@ public class Nameserver {
         
         }
         return ">_No Key Found";
+    }
+    public String insert(int key, String value) throws UnknownHostException, IOException,ClassNotFoundException{
+
+        if(key < configuration.id) {
+            System.out.println(">_Key inserted successfully at NS-"+configuration.id);
+            pairs.put(key,value);
+            return ""+configuration.id;
+        }else if(key > configuration.id) {
+            //insert into successor
+            Socket nxt_sock = new Socket(configuration.successor_ip, configuration.successor_port);
+            ObjectInputStream nxt_ins = new ObjectInputStream(nxt_sock.getInputStream());
+            ObjectOutputStream nxt_outs = new ObjectOutputStream(nxt_sock.getOutputStream());
+            nxt_outs.writeObject("insert "+key+" "+value);
+            nxt_outs.writeObject(configuration.id);
+            value = (String) nxt_ins.readObject();
+            nxt_sock.close();
+            return value;
+        }else{
+            return "FAIL";
+        }
     }
 
 }

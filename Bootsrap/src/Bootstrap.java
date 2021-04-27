@@ -77,12 +77,38 @@ public class Bootstrap {
     public void insert(int key, String value) throws IOException, ClassNotFoundException {
 
         if(key > Collections.max(server_list)) {
-            System.out.println(">_[Server Visited] ID:0 (Bootstrap-NS)");
+            System.out.println(">_[Servers Visited] ID:0 (Bootstrap-NS)");
             System.out.println(">_Key Inserted Successfully");
             pairs.put(key,value);
-        }
+        }else{
 
-        // insert in successor?
+            Socket nxt_sock = new Socket(configuration.successor_ip,configuration.successor_port);
+            ObjectInputStream nxt_ins = new ObjectInputStream(nxt_sock.getInputStream());
+            ObjectOutputStream nxt_outs = new ObjectOutputStream(nxt_sock.getOutputStream());
+            //write insert key value
+            nxt_outs.writeObject("insert "+ key + " " + value);
+
+            String servers_visited = (String) nxt_ins.readObject();
+            int count = 0;
+            for(int i = 0; i < servers_visited.length(); i++)
+            {
+                if(servers_visited.charAt(i) == '>')
+                    count++;
+            }
+            Collections.sort(server_list);
+                System.out.println(">_[Servers Visited]: "  );
+            for(int id : server_list) {
+                if(count-1 < 0)
+                    System.out.println(id);
+                else
+                    System.out.print(id + " >> ");
+                    
+                count--;
+                if(count< 0)
+                    break;
+            }
+            nxt_sock.close();
+        }
     }
 
     // delete service for a key

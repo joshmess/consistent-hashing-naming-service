@@ -99,7 +99,8 @@ public class BootstrapDriver {
                         }
                         //signal end of transfer
                         outs.writeObject("END");
-                    }else if(Collections.max(bootstrap_ns.server_list) < new_id){
+
+                    }else if(highest_ns_id < new_id){
                         // new ns id greater than maximum server id
                         
                         //update bootstrap predecessor
@@ -180,8 +181,9 @@ public class BootstrapDriver {
                     //reconfigure with new predecessor & successor information
                     bootstrap_ns.configuration.reconfigure(Integer.parseInt(new_succ[2]), bootstrap_ns.configuration.predecessor_port, Integer.parseInt(new_succ[0]), bootstrap_ns.configuration.predecessor_id,new_succ[1], bootstrap_ns.configuration.predecessor_ip);
                     //once this is done, the exit is complete
-                    break;
+                    break; 
             }
+            highest_ns_id = Collections.max(bootstrap_ns.server_list);
         }
 
     }
