@@ -105,6 +105,7 @@ public class NSCommandHandler extends Thread{
 						    server_list = server_list.concat(" > "+value[1]);
 					    else
 						    server_list = server_list.concat(" > "+ns.configuration.id);
+                            
 					    outs.writeObject(value[0]);
 					    outs.writeObject(server_list);
 					    break;

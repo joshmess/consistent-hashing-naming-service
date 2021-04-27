@@ -1,6 +1,6 @@
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.security.DrbgParameters.NextBytes;
+
 import java.util.HashMap;
 import java.io.*;
 
@@ -44,7 +44,6 @@ public class Nameserver {
     public String insert(int key, String value) throws UnknownHostException, IOException,ClassNotFoundException{
 
         if(key < configuration.id) {
-            System.out.println(">_Key inserted successfully at NS-"+configuration.id);
             pairs.put(key,value);
             return ""+configuration.id;
         }else if(key > configuration.id) {

@@ -81,32 +81,36 @@ public class Bootstrap {
             System.out.println(">_Key Inserted Successfully");
             pairs.put(key,value);
         }else{
-
+            Collections.sort(server_list);
+            //check successor
             Socket nxt_sock = new Socket(configuration.successor_ip,configuration.successor_port);
             ObjectInputStream nxt_ins = new ObjectInputStream(nxt_sock.getInputStream());
             ObjectOutputStream nxt_outs = new ObjectOutputStream(nxt_sock.getOutputStream());
             //write insert key value
             nxt_outs.writeObject("insert "+ key + " " + value);
-
             String servers_visited = (String) nxt_ins.readObject();
-            int count = 0;
+            int servcount = 0;
+            //iterate over servers that should be displayed
             for(int i = 0; i < servers_visited.length(); i++)
             {
                 if(servers_visited.charAt(i) == '>')
-                    count++;
+                    servcount++;
             }
-            Collections.sort(server_list);
-                System.out.println(">_[Servers Visited]: "  );
+            System.out.println(">_[Servers Visited]: "  );
+            int final_id = -1;
             for(int id : server_list) {
-                if(count-1 < 0)
+                if(count <= 0){
                     System.out.println(id);
-                else
+                    final_id = id;
+                }else{
                     System.out.print(id + " >> ");
+                }
                     
-                count--;
+                servcount--;
                 if(count< 0)
                     break;
             }
+            System.out.println(">_Item inserted at NS-"+final_id);
             nxt_sock.close();
         }
     }
