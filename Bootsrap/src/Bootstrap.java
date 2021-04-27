@@ -96,7 +96,7 @@ public class Bootstrap {
                 if(servers_visited.charAt(i) == '>')
                     servcount++;
             }
-            System.out.println(">_[Servers Visited]: "  );
+            System.out.print(">_[Servers Visited]: "  );
             int final_id = -1;
             for(int id : server_list) {
                 if(servcount <= 0){
@@ -110,7 +110,8 @@ public class Bootstrap {
                 if(servcount< 0)
                     break;
             }
-            System.out.println(">_Item inserted at NS-"+final_id);
+            System.out.println();
+            System.out.println(">_Item inserted at Nameserver"+final_id);
             nxt_sock.close();
         }
     }

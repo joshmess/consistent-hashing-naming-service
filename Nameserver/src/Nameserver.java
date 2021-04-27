@@ -57,7 +57,7 @@ public class Nameserver {
             nxt_sock.close();
             return value;
         }else{
-            return "FAIL";
+            return ">_FAIL";
         }
     }
 
