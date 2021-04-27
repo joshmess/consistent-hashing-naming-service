@@ -78,7 +78,7 @@ public class Bootstrap {
 
         if(key > Collections.max(server_list)) {
             System.out.println(">_[Servers Visited] ID:0 (Bootstrap-NS)");
-            System.out.println(">_Key Inserted Successfully");
+            System.out.println(">_Key inserted at Bootstrap Nameserver");
             pairs.put(key,value);
         }else{
             Collections.sort(server_list);
