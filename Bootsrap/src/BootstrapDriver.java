@@ -47,7 +47,7 @@ public class BootstrapDriver {
             if(!ns_config[0].equals("update_pred") && !ns_config[0].equals("updte_succ") && !ns_config[0].equals("new_highest_id")) {
                     new_ns_id = Integer.parseInt(ns_config[1]);
                     new_ns_ip = ns_config[2];
-                    new_ns_port = Integer.parseInt(nameServerDetailsStr[3]);
+                    new_ns_port = Integer.parseInt(ns_config[3]);
             }
             
 
@@ -100,7 +100,7 @@ public class BootstrapDriver {
                         //signal end of transfer
                         outs.writeObject("END");
 
-                    }else if(highest_ns_id < new_id){
+                    }else if(highest_ns_id < new_ns_id){
                         // new ns id greater than maximum server id
                         
                         //update bootstrap predecessor
@@ -109,7 +109,7 @@ public class BootstrapDriver {
                         bootstrap_ns.configuration.predecessor_port = new_ns_port;
 
                         //store succ info
-                        int nxt_ip = bootstrap_ns.configuration.successor_ip;
+                        String nxt_ip = bootstrap_ns.configuration.successor_ip;
                         int nxt_port = bootstrap_ns.configuration.successor_port;
 
                         Socket nxt_sock = new Socket(nxt_ip,nxt_port);
