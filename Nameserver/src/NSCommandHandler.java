@@ -102,7 +102,7 @@ public class NSCommandHandler extends Thread{
                         //lookup in ns
 					    String[] value = ns.lookup(key,server_list).split(" ");	
 					    if(value.length > 1)
-						    server_list = server_list.concat(" > "+value[1]);
+						    server_list = server_list.concat(" > "+ns.configuration.id + " > " + value[1]);
 					    else
 						    server_list = server_list.concat(" > "+ns.configuration.id);
                             
