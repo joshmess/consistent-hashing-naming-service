@@ -37,19 +37,18 @@ public class NSCommandHandler extends Thread{
                 switch(query_list[0]){
 
                     case "lookup":
-                        //lookup in ns
-                        //read in servers visited
-                        String servers_visited = (String) ins.readObject();
-                        //parse key from query
+                        
                         int key = Integer.parseInt(query_list[1]);
-                        String result = ns.lookup(key);
-                    
-                        if(!result.equals("NOT FOUND") && !result.equals("CHECK SUCC")){
-                            servers_visited += ","+ns.configuration.id;
-                        }
-                        //send value:ns1,ns2,ns3,...
-                        outs.writeObject(""+result+":"+servers_visited);
-                        break;
+					    String server_list = (String) ins.readObject();
+                        //lookup in ns
+					    String[] value = ns.lookup(key,server_list).split(" ");	
+					    if(value.length > 1)
+						    server_list = server_list.concat("->"+value[1]);
+					    else
+						    server_list = server_list.concat("->"+ns.configuration.id);
+					    outs.writeObject(value[0]);
+					    outs.writeObject(server_list);
+					    break;
                     case "update_succ":
                         //new ns entry
                         

@@ -16,11 +16,11 @@ public class Nameserver {
         configuration = new NSConfig(id, conn_port);
     }
     //implements ns lookup
-    public String lookup(int key)throws IOException, ClassNotFoundException{
+    public String lookup(int key, String server_list)throws IOException, ClassNotFoundException{
 
         if(pairs.containsKey(key)){
             return pairs.get(key);
-        }else{
+        }else if(key > configuration.id){
 
             // check successor
             Socket succ_sock = new Socket(configuration.successor_ip,configuration.successor_port);
@@ -29,14 +29,15 @@ public class Nameserver {
 
             //write lookup key
             outs.writeObject("lookup "+key);
-            //write string representing list of visited servers (BS only)
-            outs.writeObject("0,"+configuration.id);
-            String result = (String)ins.readObject();
-            String[] result_list = result.split(":");
-            System.out.println(">_[Server Visited]: "+result_list[1]);
-            return result_list[0];
-            
+			outs.writeObject(server_list);
+			String value = (String) ins.readObject();
+			String new_servers = (String) ins.readObject();
+
+			succ_sock.close();
+			return value+" "+new_servers;
+        
         }
+        return ">_No Key Found";
     }
 
 }

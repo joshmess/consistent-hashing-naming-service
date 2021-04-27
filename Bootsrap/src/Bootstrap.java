@@ -37,20 +37,33 @@ public class Bootstrap {
         }
 
         // check successor
-        Socket succ_sock = new Socket(configuration.successor_ip,configuration.successor_port);
-        ObjectInputStream ins = new ObjectInputStream(succ_sock.getInputStream());
-        ObjectOutputStream outs = new ObjectOutputStream(succ_sock.getOutputStream());
-        
-        //write lookup key
-        outs.writeObject("lookup "+key);
-        //write string representing list of visited servers (BS only)
-        outs.writeObject("0");
-
-        String result = (String)ins.readObject();
-        String[] result_list = result.split(":");
-        System.out.println(">_[Server Visited]: "+result_list[1]);
-        
-        return result_list[0];
+        Socket succ_sock = new Socket(configuration.successor_ip, configuration.successor_port);
+		ObjectInputStream ins = new ObjectInputStream(succ_sock.getInputStream());
+		ObjectOutputStream outs = new ObjectOutputStream(succ_sock.getOutputStream());
+		outs.writeObject("lookup "+key);
+		outs.writeObject("0");
+		String value = (String) inputStreamFwd.readObject();
+		String servers_visited = (String) inputStreamFwd.readObject();
+		int count = 0;
+		for(int i = 0; i < servers_visited.length(); i++)
+		{
+			if(servers_visited.charAt(i) == '-')
+				count++;
+		}
+		Collections.sort(server_list);
+		System.out.println(">_[Server Visited]: ");
+		for(int id : serverIDS) {
+			if(count-1 < 0)
+				System.out.println(id);
+			else
+				System.out.print(id + " >> ");
+				
+			count--;
+			if(count< 0)
+				break;
+		}
+		succ_sock.close();
+		return value;
     }
 
     // insert service for a key
