@@ -21,6 +21,7 @@ public class Nameserver {
     public String lookup(int key, String server_list)throws IOException, ClassNotFoundException{
 
         if(pairs.containsKey(key)){
+            //found in ns
             return pairs.get(key);
         }else if(key > configuration.id){
 
@@ -36,14 +37,16 @@ public class Nameserver {
 			String new_servers = (String) ins.readObject();
 
 			succ_sock.close();
-			return value+" "+new_servers;
+			return value + " " + new_servers;
         
+        }else{
+            return "*404NotFound";
         }
-        return ">_404NotFound";
     }
     public String insert(int key, String value) throws UnknownHostException, IOException,ClassNotFoundException{
 
         if(key < configuration.id) {
+            //this is the NS to insert at
             pairs.put(key,value);
             return ""+configuration.id;
         }else if(key > configuration.id) {
@@ -58,6 +61,66 @@ public class Nameserver {
             return value;
         }else{
             return ">_FAIL";
+        }
+    }
+    public String delete(int key)throws UnknownHostException, IOException, ClassNotFoundException{
+
+        if(key < configuration.id) {
+            //this ns has the key
+            if(pairs.containsKey(key)){
+                pairs.remove(key);
+                return ""+configuration.id;
+            }
+            return "*404NotFound";
+        }else if(key > configuration.id){
+            //connect with successor
+            Socket nxt_sock = new Socket(configuration.successor_ip,configuration.successor_port);
+            ObjectInputStream nxt_ins = new ObjectInputStream(nxt_sock.getInputStream());
+            ObjectOutputStream nxt_outs = new ObjectOutputStream(nxt_sock.getOutputStream());
+            nxt_outs.writeObject("delete " + key);
+            return (String) nxt_ins.readObject();
+        }else{
+            return ">_404NotFound";
+        }
+    }
+    /*
+    * This protected inner class stores information about each nodes predecessor and successor
+    */
+    protected static class NSConfig {
+
+        int id;
+        int conn_port;
+
+        //Predecessor info
+        String predecessor_ip;
+        int predecessor_port;
+        int predecessor_id;
+
+        //Successor info
+        String successor_ip;
+        int successor_port;
+        int successor_id;
+
+        // Default Constructor
+        public NSConfig(int id, int conn_port){
+
+            this.id = id;
+            this.conn_port = conn_port;
+
+            successor_port = 0;
+            successor_id = 0;
+            predecessor_id = 0;
+        }
+
+        // If changes to pred/succ occur
+        public void reconfigure(int successor_port, int predecessor_port, int  successor_id, int predecessor_id, String successor_ip, String predecessor_ip) {
+
+            this.successor_port = successor_port;
+            this.successor_id = successor_id;
+            this.predecessor_id = predecessor_id;
+            this.predecessor_ip = predecessor_ip;
+            this.successor_ip = successor_ip;
+            this.predecessor_port = predecessor_port;
         }
     }
 
