@@ -2,6 +2,9 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.Scanner;
 
+/*
+* This class represents the UI for a Bootstrap Nameserver
+*/
 public class UIThread  extends Thread{
 
     Bootstrap bootstrap_ns;

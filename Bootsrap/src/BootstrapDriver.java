@@ -20,17 +20,24 @@ public class BootstrapDriver {
         int bootstrap_conn_port = Integer.parseInt(config_scan.nextLine());
         ServerSocket ss = new ServerSocket(bootstrap_conn_port);
 
+        //this variable will track the highest id in DHT
+        int highest_ns_id = 0;
+
+        //Create Bootstrap server
         Bootstrap bootstrap_ns = new Bootstrap(bootstrap_id);
 
+        //add orginal keys to bootstrap
         while (config_scan.hasNextLine()) {
             String[] pair = config_scan.nextLine().split(" ");
             bootstrap_ns.pairs.put(Integer.parseInt(pair[0]),pair[1]);
         }
 
+        //create & start UI thread for services
         UIThread bootstrap_ui = new UIThread(bootstrap_ns);
         bootstrap_ui.start();
-        int highest_ns_id = 0;
+        
 
+        //Bootstrap main process waiting for more nameservers
         while(true){
 
             Socket ns_socket = ss.accept();
@@ -39,7 +46,8 @@ public class BootstrapDriver {
             ObjectOutputStream outs = new ObjectOutputStream(ns_socket.getOutputStream());
             String nameserver_details = (String) ins.readObject();
             String[] ns_config = nameserver_details.split(":");
-            int new_ns_id = Integer.parseInt(ns_config[1]);
+            //variables for new ns info
+            int new_ns_id = -1;
             int new_ns_port = -1;
             String new_ns_ip = "";
 
@@ -66,9 +74,8 @@ public class BootstrapDriver {
                     }
                     outs.writeObject(servers_visited);
                     
-                    if(bootstrap_ns.configuration.successor_id == 0){
+                    if(bootstrap_ns.configuration.successor_id == 0 && bootstrap_ns.configuration.predecessor_id == 0){
 
-                        
                         //bootstrap is the only server upon entry
 
                         //update BS successor
@@ -150,7 +157,48 @@ public class BootstrapDriver {
                     }else{
                         //insert in between bootstrap and ns
 
+                        //connect to successor
+                        Socket succ_sock = new Socket(bootstrap_ns.configuration.successor_ip,bootstrap_ns.configuration.successor_port);
+                        ObjectInputStream succ_ins = new ObjectInputStream(succ_sock.getInputStream());
+						ObjectOutputStream succ_outs = new ObjectOutputStream(succ_sock.getOutputStream());
+
+                        succ_outs.writeObject("middle-entry "+new_ns_id + " "+new_ns_ip+ " " + new_ns_port);
+
+                        //read in pred_id:succ_id-
+                        String pred_succ_id = (String) succ_ins.readObject();
+                        String[] id_tuple = pred_succ_id.split(":");
+
+                        //read in pred_ip:pred_port
+                        String pred_info = (String) succ_ins.readObject();
+                        String[] pred_tuple = pred_info.split(":");
+
+                        //read in succ_ip:succ_port
+                        String succ_info = (String) succ_ins.readObject();
+                        String[] succ_tuple = succ_info.split(":");
+
+                        //send pred_id:succ_id
+                        outs.writeObject(""+id_tuple[0]+":"+id_tuple[1]);
+                        //send pred_ip:pred_port
+                        outs.writeObject(""+pred_tuple[0]+":"+pred_tuple[1]);
+                        //send succ_ip:succ_port
+                        outs.writeObject(""+succ_tuple[0]+":"+succ_tuple[1]);
+
+                        String tuple = "";
+                        String[] kvp;
+                        //read in pairs
+                        do{
+                            tuple = (String) succ_ins.readObject();
+                            kvp = tuple.split(":");
+                            if(tuple.equals("END")){
+                                break;
+                            }
+                            //forward to new entry
+                            outs.writeObject(kvp[0]+":"+kvp[1]);
+                        }while(true);
+                        outs.writeObject("END");
+                        succ_sock.close();
                     }
+
                     break;
 
                 case "update_pred":
