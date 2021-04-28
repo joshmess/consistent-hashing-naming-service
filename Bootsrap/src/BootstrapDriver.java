@@ -195,6 +195,7 @@ public class BootstrapDriver {
                             //forward to new entry
                             outs.writeObject(kvp[0]+":"+kvp[1]);
                         }while(true);
+                        outs.writeObject("END");
                         succ_sock.close();
                     }
 
