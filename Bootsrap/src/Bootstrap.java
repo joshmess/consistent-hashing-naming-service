@@ -147,7 +147,7 @@ public class Bootstrap {
                     return;
                 }
             }
-            System.out.print(">_ Deletion Successful "  );
+            System.out.println(">_ Deletion Successful "  );
             System.out.print(">_ [Servers Visited]: "  );
             for(int id : server_list) {
                 if(servcount <= 0){

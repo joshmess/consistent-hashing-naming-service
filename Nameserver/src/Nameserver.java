@@ -63,7 +63,7 @@ public class Nameserver {
             return ">_FAIL";
         }
     }
-    public String delete(int key)throws UnknownHostException, IOException{
+    public String delete(int key)throws UnknownHostException, IOException, ClassNotFoundException{
 
         if(key < configuration.id) {
             //this ns has the key
