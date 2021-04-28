@@ -46,6 +46,7 @@ public class Nameserver {
     public String insert(int key, String value) throws UnknownHostException, IOException,ClassNotFoundException{
 
         if(key < configuration.id) {
+            //this is the NS to insert at
             pairs.put(key,value);
             return ""+configuration.id;
         }else if(key > configuration.id) {
@@ -60,6 +61,26 @@ public class Nameserver {
             return value;
         }else{
             return ">_FAIL";
+        }
+    }
+    public String delete(int key){
+
+        if(key < configuration.id) {
+            //this ns has the key
+            if(pairs.containsKey(key)){
+                pairs.remove(key);
+                return ""+configuration.id;
+            }
+            return ">_404NotFound";
+        }else if(key > configuration.id){
+            //connect with successor
+            Socket nxt_sock = new Socket(configuration.successor_ip,configuration.successor_port);
+            ObjectInputStream nxt_ins = new ObjectInputStream(nxt_sock.getInputStream());
+            ObjectOutputStream nxt_outs = new ObjectOutputStream(nxt_sock.getOutputStream());
+            nxt_outs.writeObject("delete " + key);
+            return (String) nxt_ins.readObject();
+        }else{
+            return ">_404NotFound";
         }
     }
     /*

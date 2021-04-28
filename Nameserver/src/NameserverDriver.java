@@ -184,6 +184,9 @@ public class NameserverDriver {
                     }else if(query_list[0].equals("insert")){
                         //insert into ns or succ
                         outs.writeObject(ns.configuration.id + " > " + ns.insert(Integer.parseInt(query_list[1]), query_list[2]));
+                    }else if(query_list[0].equals("delete")){
+                        //call ns delete
+                        outs.writeObject(ns.configuration.id + " > " + ns.delete(Integer.parseInt(query_list[1])));
                     }else if(query_list[0].equals("middle-entry")){
                         //ns entering in between other nameservers
                         int entering_id = Integer.parseInt(query_list[1]);

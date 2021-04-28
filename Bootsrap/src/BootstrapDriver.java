@@ -59,7 +59,7 @@ public class BootstrapDriver {
                 // write back tuple
                 outs.writeObject(""+Inet4Address.getLocalHost().getHostAddress()+":"+bootstrap_conn_port);
                 String servers_visited = "0";
-                //create list of servers visited in format 'ns1,ns2,ns3...'
+                //create list of servers visited in format 'ns1 > ns2 > ns3...'
                 for (int id : bootstrap_ns.server_list) {
                     if (new_ns_id > id && id != 0) {
                         servers_visited += " > " + id; 
