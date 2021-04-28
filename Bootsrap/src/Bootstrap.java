@@ -44,9 +44,8 @@ public class Bootstrap {
 		outs.writeObject("lookup "+key);
 		outs.writeObject("0");
         //read value and  server list
-        String val_and_servers = (String) ins.readObject();
-        String value = val_and_servers.split(":")[0];
-        String servers_visited = val_and_servers.split(":")[1];
+        String value = (String) ins.readObject();
+		String servers_visited = (String) ins.readObject();
         //sort ids for printing
         Collections.sort(server_list);
         //count servers visited
