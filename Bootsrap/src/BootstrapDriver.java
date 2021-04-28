@@ -165,28 +165,35 @@ public class BootstrapDriver {
                         succ_outs.writeObject("middle-entry "+new_ns_id + " "+new_ns_ip+ " " + new_ns_port);
 
                         //read in pred_id:succ_id-
-                        String pred_succ_id = (String) nxt_ins.readObject();
+                        String pred_succ_id = (String) succ_ins.readObject();
                         String[] id_tuple = pred_succ_id.split(":");
 
                         //read in pred_ip:pred_port
-                        String pred_info = (String) nxt_ins.readObject();
+                        String pred_info = (String) succ_ins.readObject();
                         String[] pred_tuple = pred_info.split(":");
 
                         //read in succ_ip:succ_port
-                        String succ_info = (String) nxt_ins.readObject();
+                        String succ_info = (String) succ_ins.readObject();
                         String[] succ_tuple = succ_info.split(":");
-                        
+
+                        //send pred_id:succ_id
+                        outs.writeObject(""+id_tuple[0]+":"+id_tuple[1]);
+                        //send pred_ip:pred_port
+                        outs.writeObject(""+pred_tuple[0]+":"+pred_tuple[1]);
+                        //send succ_ip:succ_port
+                        outs.writeObject(""+succ_tuple[0]+":"+succ_tuple[1]);
+
                         String tuple = "";
                         String[] kvp;
                         //read in pairs
                         do{
-                            tuple = (String) ins.readObject();
+                            tuple = (String) succ_ins.readObject();
                             kvp = tuple.split(":");
                             if(tuple.equals("END")){
                                 break;
                             }
                             //forward to new entry
-                            ns.pairs.put(Integer.parseInt(kvp[0]),kvp[1]);
+                            outs.writeObject(kvp[0]+":"+kvp[1]);
                         }while(true);
                         succ_sock.close();
                     }
