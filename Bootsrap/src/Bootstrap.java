@@ -130,8 +130,38 @@ public class Bootstrap {
             pairs.remove(key);
         }else{
             //connect with successor
-        }
+            Socket nxt_sock = new Socket(configuration.successor_ip,configuration.successor_port);
+            ObjectInputStream nxt_ins = new ObjectInputStream(nxt_sock.getInputStream());
+            ObjectOutputStream nxt_outs = new ObjectOutputStream(nxt_sock.getOutputStream());
+            nxt_outs.writeObject("delete " + key);
 
+            String id_list = (String) nxt_ins.readObject();
+            int servcount = 0;
+            //iterate over servers that should be displayed
+            for(int i = 0; i < id_list.length(); i++){
+                if(id_list.charAt(i) == '>'){
+                    servcount+=1;
+                }
+                if(id_list.charAt(i) == '*'){
+                    System.out.println(">_ Key Not Found");
+                    return;
+                }
+            }
+            System.out.print(">_ Deletion Successful "  );
+            System.out.print(">_ [Servers Visited]: "  );
+            for(int id : server_list) {
+                if(servcount <= 0){
+                    System.out.println(id);
+                    int final_id = id;
+                }else{
+                    System.out.print(id + " >> ");
+                }
+                    
+                servcount-=1;
+                if(servcount < 0)
+                    break;
+            }
+        }
         // check successor
     }
 

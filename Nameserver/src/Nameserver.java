@@ -40,7 +40,7 @@ public class Nameserver {
 			return value + " " + new_servers;
         
         }else{
-            return ">_404NotFound";
+            return "*404NotFound";
         }
     }
     public String insert(int key, String value) throws UnknownHostException, IOException,ClassNotFoundException{
@@ -63,7 +63,7 @@ public class Nameserver {
             return ">_FAIL";
         }
     }
-    public String delete(int key){
+    public String delete(int key)throws UnknownHostException, IOException{
 
         if(key < configuration.id) {
             //this ns has the key
@@ -71,7 +71,7 @@ public class Nameserver {
                 pairs.remove(key);
                 return ""+configuration.id;
             }
-            return ">_404NotFound";
+            return "*404NotFound";
         }else if(key > configuration.id){
             //connect with successor
             Socket nxt_sock = new Socket(configuration.successor_ip,configuration.successor_port);
