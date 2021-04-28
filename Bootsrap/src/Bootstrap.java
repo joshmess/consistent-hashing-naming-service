@@ -13,7 +13,7 @@ import java.util.Scanner;
 */
 public class Bootstrap {
 
-    NSConfig configuration;
+    BSNConfig configuration;
     ServerSocket server;
     int bootstrap_conn_port;
     ArrayList<Integer> server_list;
@@ -23,7 +23,7 @@ public class Bootstrap {
     public Bootstrap(int id){
         server_list = new ArrayList<>();
         pairs = new HashMap<>();
-        configuration = new NSConfig(id,bootstrap_conn_port);
+        configuration = new BSNConfig(id,bootstrap_conn_port);
         server_list.add(id);
     }
 
@@ -133,6 +133,47 @@ public class Bootstrap {
         }
 
         // check successor
+    }
+
+    /*
+    * This protected inner class stores information about each nodes predecessor and successor
+    */
+    protected class BSNConfig {
+
+        int id;
+        int conn_port;
+
+        //Predecessor info
+        String predecessor_ip;
+        int predecessor_port;
+        int predecessor_id;
+
+        //Successor info
+        String successor_ip;
+        int successor_port;
+        int successor_id;
+
+        // Default Constructor
+        public BSNConfig(int id, int conn_port){
+
+            this.id = id;
+            this.conn_port = conn_port;
+
+            successor_port = 0;
+            successor_id = 0;
+            predecessor_id = 0;
+        }
+
+        // If changes to pred/succ occur
+        public void reconfigure(int successor_port, int predecessor_port, int  successor_id, int predecessor_id, String successor_ip, String predecessor_ip) {
+
+            this.successor_port = successor_port;
+            this.successor_id = successor_id;
+            this.predecessor_id = predecessor_id;
+            this.predecessor_ip = predecessor_ip;
+            this.successor_ip = successor_ip;
+            this.predecessor_port = predecessor_port;
+        }
     }
 
 

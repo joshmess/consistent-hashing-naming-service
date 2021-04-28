@@ -222,7 +222,7 @@ public class BootstrapDriver {
 
     }
     /*
-    * This class represents the UI for a Bootstrap Nameserver
+    * This private inner class represents the UI for a Bootstrap Nameserver
     */
     private static class UIThread  extends Thread{
 
