@@ -57,7 +57,6 @@ public class BootstrapDriver {
                     new_ns_ip = ns_config[2];
                     new_ns_port = Integer.parseInt(ns_config[3]);
             }
-            
 
             switch(ns_config[0]){
                 case "enter":

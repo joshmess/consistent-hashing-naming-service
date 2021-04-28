@@ -124,6 +124,10 @@ public class Bootstrap {
             System.out.println("[Server Visited] ID:0 (Bootstrap-NS)");
             System.out.println(">_Key Deleted Successfully");
             pairs.remove(key);
+        }else{
+            //connect with successor
+
+
         }
 
         // check successor
