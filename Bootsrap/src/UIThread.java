@@ -25,37 +25,31 @@ public class UIThread  extends Thread{
             query = scan.nextLine();
             String[] query_list = query.split(" ");
 
-            switch(query_list[0]) {
+            if(query_list[0].equals("lookup")){
 
-                case "lookup":
+                try {
+                    System.out.println(bootstrap_ns.lookup(Integer.parseInt(query_list[1])));
+                } catch (NumberFormatException | ClassNotFoundException | IOException e) {
+                    e.printStackTrace();
+                }
+            }else if(query_list[0].equals("insert")){
 
-                    try {
-                        System.out.println(bootstrap_ns.lookup(Integer.parseInt(query_list[1])));
-                    } catch (NumberFormatException | ClassNotFoundException | IOException e) {
-                        e.printStackTrace();
-                    }
-                    break;
+                try {
+                    bootstrap_ns.insert(Integer.parseInt(query_list[1]), query_list[2]);
+                } catch (NumberFormatException | ClassNotFoundException | IOException e) {
+                    e.printStackTrace();
+                }
+ 
+            }else if(query_list[0].equals("delete")){
 
-                case "insert":
-
-                    try {
-                        bootstrap_ns.insert(Integer.parseInt(query_list[1]), query_list[2]);
-                    } catch (NumberFormatException | ClassNotFoundException | IOException e) {
-                        e.printStackTrace();
-                    }
-                    break;
-
-                case "delete":
-                    try {
-                        bootstrap_ns.delete(Integer.parseInt(query_list[1]));
-                    } catch (NumberFormatException | ClassNotFoundException | IOException e) {
-                        e.printStackTrace();
-                    }
-                    break;
-
-                default:
-                    System.out.println(">_Query Not Recognized");
-
+             
+                try {
+                    bootstrap_ns.delete(Integer.parseInt(query_list[1]));
+                } catch (NumberFormatException | ClassNotFoundException | IOException e) {
+                    e.printStackTrace();
+                }
+            }else{
+                System.out.println(">_Query Not Recognized");
             }
         }
     }
