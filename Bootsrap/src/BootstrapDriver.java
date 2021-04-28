@@ -244,6 +244,10 @@ public class BootstrapDriver {
                 query = scan.nextLine();
                 String[] query_list = query.split(" ");
 
+                if(query.equals("quit")){
+                    break;
+                }
+
                 if(query_list[0].equals("lookup")){
 
                     try {
@@ -271,6 +275,9 @@ public class BootstrapDriver {
                     System.out.println(">_Query Not Recognized");
                 }
             }
+
+            System.out.println("Thank You! :)");
+            System.exit(0);
         }
     }
 }
