@@ -63,9 +63,9 @@ public class Nameserver {
         }
     }
     /*
-    * Thisprivate inner class stores information about each nodes predecessor and successor
+    * This protected inner class stores information about each nodes predecessor and successor
     */
-    private class NSConfig {
+    protected static class NSConfig {
 
         int id;
         int conn_port;
