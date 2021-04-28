@@ -19,9 +19,8 @@ public class BootstrapDriver {
         int bootstrap_id = Integer.parseInt(config_scan.nextLine());
         int bootstrap_conn_port = Integer.parseInt(config_scan.nextLine());
         ServerSocket ss = new ServerSocket(bootstrap_conn_port);
-
-        //this variable will track the highest id in DHT
         int highest_ns_id = 0;
+        
         //Create Bootstrap server
         Bootstrap bootstrap_ns = new Bootstrap(bootstrap_id);
 

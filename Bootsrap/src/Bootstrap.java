@@ -96,8 +96,9 @@ public class Bootstrap {
             //iterate over servers that should be displayed
             for(int i = 0; i < servers_visited.length(); i++)
             {
-                if(servers_visited.charAt(i) == '>')
-                    servcount++;
+                if(servers_visited.charAt(i) == '>'){
+                    servcount+=1;
+                }
             }
             System.out.print(">_[Servers Visited]: "  );
             int final_id = -1;
@@ -109,8 +110,8 @@ public class Bootstrap {
                     System.out.print(id + " >> ");
                 }
                     
-                servcount--;
-                if(servcount< 0)
+                servcount-=1;
+                if(servcount < 0)
                     break;
             }
             System.out.println();

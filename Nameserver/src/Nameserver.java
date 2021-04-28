@@ -21,6 +21,7 @@ public class Nameserver {
     public String lookup(int key, String server_list)throws IOException, ClassNotFoundException{
 
         if(pairs.containsKey(key)){
+            //found in ns
             return pairs.get(key);
         }else if(key > configuration.id){
 
@@ -36,10 +37,11 @@ public class Nameserver {
 			String new_servers = (String) ins.readObject();
 
 			succ_sock.close();
-			return value+" "+new_servers;
+			return value + " " + new_servers;
         
+        }else{
+            return ">_404NotFound";
         }
-        return ">_404NotFound";
     }
     public String insert(int key, String value) throws UnknownHostException, IOException,ClassNotFoundException{
 

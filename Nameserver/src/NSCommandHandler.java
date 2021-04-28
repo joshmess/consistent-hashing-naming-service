@@ -36,29 +36,24 @@ public class NSCommandHandler extends Thread{
                
                 if(query_list[0].equals("lookup")){
 
-                    int key = Integer.parseInt(query_list[1]);
                     String server_list = (String) ins.readObject();
                     //lookup in ns
-                    String[] result = ns.lookup(key,server_list).split(" ");	
+                    String[] result = ns.lookup(Integer.parseInt(query_list[1]),server_list).split(" ");
+                    String value = result[0];
                     
                     if(!(result.length > 1)){
                         //value, found --> add id
                         server_list += " > "+ns.configuration.id;
                     }else{
                         //if value not found --> add id & next server found
-                        server_list += " > "+ns.configuration.id + " > " + result[1];
+                        server_list += " > "+ns.configuration.id + " > " + value;
                     }
-                    outs.writeObject(result[0]);
+                    outs.writeObject(value);
                     outs.writeObject(server_list);
 
                 }else if(query_list[0].equals("insert")){
                     //insert into ns or succ
-                    int key_to_insert = Integer.parseInt(query_list[1]);
-                    String value_to_insert = query_list[2];
-
-                    String ins_result = ns.insert(key_to_insert, value_to_insert);
-                    outs.writeObject(ns.configuration.id + " > " + ins_result);
-
+                    outs.writeObject(ns.configuration.id + " > " + ns.insert(Integer.parseInt(query_list[1]), query_list[2]));
                 }else if(query_list[0].equals("middle-entry")){
                     //ns entering in between other nameservers
                     int entering_id = Integer.parseInt(query_list[1]);
