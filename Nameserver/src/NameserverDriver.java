@@ -2,6 +2,7 @@ import java.io.*;
 import java.net.Inet4Address;
 import java.net.Socket;
 import java.util.Scanner;
+import java.net.ServerSocket;
 
 /*
 * Driving class for a nameserver.
@@ -136,7 +137,7 @@ public class NameserverDriver {
     /*
     * This class services requests at nameservers other than the Bootstrap.
     */
-    private class NSQueryHandler extends Thread{
+    private static class NSQueryHandler extends Thread{
 
         Nameserver ns;
         ServerSocket ss;
