@@ -117,9 +117,10 @@ public class NameserverDriver {
                 Socket pred_sock = new Socket(ns.configuration.predecessor_ip,ns.configuration.predecessor_port);
                 ObjectOutputStream pred_outs = new ObjectOutputStream(pred_sock.getOutputStream());
                 ObjectInputStream pred_ins = new ObjectInputStream(pred_sock.getInputStream());
-                succ_outs.writeObject("update_succ");
+                pred_outs.writeObject("update_succ");
                 //send succ_id:succ_ip:succ_port
-                succ_outs.writeObject(""+ns.configuration.successor_id+":"+ns.configuration.successor_ip+":"+ns.configuration.successor_port);
+                pred_outs.writeObject(""+ns.configuration.successor_id+":"+ns.configuration.successor_ip+":"+ns.configuration.successor_port);
+                
                 System.out.println(">_Successful Exit");
                 System.out.println(">_Successor ID: "+ns.configuration.successor_id);
                 System.out.println(">_Range of Keys Transferred: ["+ns.configuration.predecessor_id+","+ns.configuration.id+"]");

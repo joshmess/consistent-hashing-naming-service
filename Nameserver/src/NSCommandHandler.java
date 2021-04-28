@@ -139,37 +139,7 @@ public class NSCommandHandler extends Thread{
 
                         ns.configuration.reconfigure(new_ns_port, ns.configuration.predecessor_port, new_ns_id, ns.configuration.predecessor_id, new_ns_ip, Inet4Address.getLocalHost().getHostAddress());
                     }
-                      
-                }else if(query_list.equals("update_succ")){
-
-                    System.out.println("BEING USED");
-                    //new ns entry
-                        
-                    //update this NS
-                    ns.configuration.successor_id = Integer.parseInt(query_list[1]);
-                    ns.configuration.successor_ip = query_list[2];
-                    ns.configuration.successor_port = Integer.parseInt(query_list[3]);
-                
-                }else if(query_list[0].equals("update_pred")){
-                    System.out.println("IM BEING USED");
-                    //update pred and transfer keys
-                    String new_pred = (String) ins.readObject();
-                    String[] pred_list = new_pred.split(" ");
-                    ns.configuration.predecessor_id = Integer.parseInt(pred_list[0]);
-                    ns.configuration.predecessor_ip = pred_list[1];
-                    ns.configuration.predecessor_port = Integer.parseInt(pred_list[2]);
-                    String tuple = "";
-                    String[] kvp;
-                    do{
-                        tuple = (String) ins.readObject();
-                        kvp = tuple.split(":");
-                        if(tuple.equals("END")){
-                               break;
-                        }
-                        ns.pairs.put(Integer.parseInt(kvp[0]),kvp[1]);
-                    }while(true);
                 }
-
             }
         }catch(IOException | ClassNotFoundException e){
             e.printStackTrace();

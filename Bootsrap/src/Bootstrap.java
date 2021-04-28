@@ -129,8 +129,6 @@ public class Bootstrap {
             pairs.remove(key);
         }else{
             //connect with successor
-
-
         }
 
         // check successor
