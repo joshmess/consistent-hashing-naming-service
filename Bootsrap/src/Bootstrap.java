@@ -43,8 +43,8 @@ public class Bootstrap {
         //write 'lookup key' then 0 for this server
 		outs.writeObject("lookup "+key);
 		outs.writeObject("0");
-        //read value and then server list
-		String value = (String) ins.readObject();
+        //read value and  server list
+        String value = (String) ins.readObject();
 		String servers_visited = (String) ins.readObject();
         //sort ids for printing
         Collections.sort(server_list);
@@ -52,21 +52,24 @@ public class Bootstrap {
 		int numserv = 0;
 		for(int i = 0; i < servers_visited.length(); i++)
 		{
-			if(servers_visited.charAt(i) == '>')
-				numserv++;
+			if(servers_visited.charAt(i) == '>'){
+				numserv+=1;
+            }
 		}
 		
 		System.out.print(">_[Servers Visited]: ");
         //print correct ids
 		for(int id : server_list) {
-			if(numserv-1 < 0)
+			if(numserv-1 < 0){
 				System.out.println(id);
-			else
+            }else{
 				System.out.print(id + " >> ");
+            }
 				
-			numserv--;
-			if(numserv < 0)
+			numserv-=1;
+			if(numserv < 0){
 				break;
+            }
 		}
         System.out.println();
 		succ_sock.close();
@@ -124,6 +127,8 @@ public class Bootstrap {
             System.out.println("[Server Visited] ID:0 (Bootstrap-NS)");
             System.out.println(">_Key Deleted Successfully");
             pairs.remove(key);
+        }else{
+            //connect with successor
         }
 
         // check successor
