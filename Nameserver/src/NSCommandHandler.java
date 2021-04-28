@@ -44,7 +44,7 @@ public class NSCommandHandler extends Thread{
                     //lookup in ns
                     String[] result = ns.lookup(key,server_list).split(" ");	
                     
-                    if(result.length == 2){
+                    if(result.length > 1){
                         //if value not found --> add id & next server found
                         server_list = server_list.concat(" > "+ns.configuration.id + " > " + result[1]);
                     }else{
