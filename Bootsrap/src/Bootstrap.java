@@ -27,7 +27,6 @@ import java.util.Scanner;
 *
 */
 
-
 /*
 * This class represents a bootstrap name server and provides service implementation.
 */
@@ -58,8 +57,8 @@ public class Bootstrap {
 
         // connect to succ
         Socket succ_sock = new Socket(configuration.successor_ip, configuration.successor_port);
-		ObjectInputStream ins = new ObjectInputStream(succ_sock.getInputStream());
-		ObjectOutputStream outs = new ObjectOutputStream(succ_sock.getOutputStream());
+	    ObjectInputStream ins = new ObjectInputStream(succ_sock.getInputStream());
+	    ObjectOutputStream outs = new ObjectOutputStream(succ_sock.getOutputStream());
         //write 'lookup key' then 0 for this server
 		outs.writeObject("" + 800 + " " + key);
 		outs.writeObject("0");
