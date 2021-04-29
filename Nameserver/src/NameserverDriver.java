@@ -61,7 +61,7 @@ public class NameserverDriver {
                 ObjectOutputStream outs = new ObjectOutputStream(sock.getOutputStream());
                 ObjectInputStream ins = new ObjectInputStream(sock.getInputStream());
                 //write to bootstrap: entry:nsID:nsIP:conn_port
-                outs.writeObject("500:"+id+":"+ Inet4Address.getLocalHost().getHostAddress()+":"+conn_port);
+                outs.writeObject("" + 500+ ":"+id+":"+ Inet4Address.getLocalHost().getHostAddress()+":"+conn_port);
                 //read in 'bootstrap_ip:bootstrap_port'
                 String bootstrap_address = (String) ins.readObject();
                 String[] bootstrap_tuple = bootstrap_address.split(":");
@@ -125,7 +125,7 @@ public class NameserverDriver {
                  ObjectInputStream pred_ins = new ObjectInputStream(pred_sock.getInputStream());
 
                 //tell successor about exit
-                succ_outs.writeObject("600");
+                succ_outs.writeObject(""+600);
                 //send pred_id:pred_ip:pred_port
                 succ_outs.writeObject(""+ns.configuration.predecessor_id+":"+ns.configuration.predecessor_ip+":"+ns.configuration.predecessor_port);
                     
@@ -141,7 +141,7 @@ public class NameserverDriver {
                 succ_outs.writeObject("END");
                     
                 //contect predecessor
-                pred_outs.writeObject("601");
+                pred_outs.writeObject("" + 601);
                 //send succ_id:succ_ip:succ_port
                 pred_outs.writeObject(""+ns.configuration.successor_id+":"+ns.configuration.successor_ip+":"+ns.configuration.successor_port);
                 

@@ -67,13 +67,14 @@ public class BootstrapDriver {
             ObjectOutputStream outs = new ObjectOutputStream(ns_socket.getOutputStream());
             String nameserver_details = (String) ins.readObject();
             String[] ns_config = nameserver_details.split(":");
+            int code = Integer.parseInt(ns_config[0]);
             //variables for new ns info
             int new_ns_id = -1;
             int new_ns_port = -1;
             String new_ns_ip = "";
 
             //new ns entering ring
-            if(ns_config[0].equals("500")){
+            if(code == 500){
              
                 new_ns_id = Integer.parseInt(ns_config[1]);
                 new_ns_ip = ns_config[2];
@@ -214,7 +215,7 @@ public class BootstrapDriver {
                     succ_sock.close();
                 }
 
-            }else if(ns_config[0].equals("600")){
+            }else if(code == 600){
                 //take in new pred info
                 String pred_info = (String) ins.readObject();
                 String[] new_pred = pred_info.split(":");
@@ -232,7 +233,7 @@ public class BootstrapDriver {
                     bootstrap_ns.pairs.put(Integer.parseInt(kvp[0]),kvp[1]);
                 }while(true);
                     
-            }else if(ns_config[0].equals("601")){
+            }else if(code == 601){
             
                     //take in new succ info
                     String succ_info = (String) ins.readObject();
