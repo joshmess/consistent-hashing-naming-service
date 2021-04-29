@@ -185,8 +185,9 @@ public class NameserverDriver {
 
                     String query = (String) ins.readObject();
                     String[] query_list = query.split(" ");
+                    int code = Integer.parseInt(query_list[0]);
                 
-                    if(query_list[0].equals("800")){
+                    if(code == 800){
 
                         String server_list = (String) ins.readObject();
                         //lookup in ns
@@ -203,13 +204,13 @@ public class NameserverDriver {
                         outs.writeObject(value);
                         outs.writeObject(server_list);
 
-                    }else if(query_list[0].equals("801")){
+                    }else if(code == 801){
                         //insert into ns or succ
                         outs.writeObject(ns.configuration.id + " > " + ns.insert(Integer.parseInt(query_list[1]), query_list[2]));
-                    }else if(query_list[0].equals("802")){
+                    }else if(code == 802){
                         //call ns delete
                         outs.writeObject(ns.configuration.id + " > " + ns.delete(Integer.parseInt(query_list[1])));
-                    }else if(query_list[0].equals("901")){
+                    }else if(code == 901){
                         //ns entering in between other nameservers
                         int entering_id = Integer.parseInt(query_list[1]);
                         String entering_ip  = query_list[2];
@@ -242,7 +243,7 @@ public class NameserverDriver {
                             ns.configuration.predecessor_port = entering_port;
                         }
                         //more than one hop??
-                    }else if(query_list[0].equals("900")){                    
+                    }else if(code == 900){                    
                         //ns entering with highest id
                         int new_ns_id = Integer.parseInt(query_list[1]);
                         String new_ns_ip  = query_list[2];
@@ -257,7 +258,7 @@ public class NameserverDriver {
                             Socket  nxt_sock = new Socket(nxt_ip,nxt_port);
                             ObjectOutputStream nxt_outs = new ObjectOutputStream(nxt_sock.getOutputStream());
                             ObjectInputStream nxt_ins = new ObjectInputStream(nxt_sock.getInputStream());
-                            nxt_outs.writeObject("900 "+new_ns_id +" " + new_ns_ip + " " + new_ns_port);
+                            nxt_outs.writeObject("" + 900 + " "+new_ns_id +" " + new_ns_ip + " " + new_ns_port);
 
                             //read in pred_id:succ_id-
                             String pred_succ_id = (String) nxt_ins.readObject();

@@ -139,7 +139,7 @@ public class BootstrapDriver {
                     Socket nxt_sock = new Socket(nxt_ip,nxt_port);
                     ObjectOutputStream nxt_outs = new ObjectOutputStream(nxt_sock.getOutputStream());
                     ObjectInputStream nxt_ins = new ObjectInputStream(nxt_sock.getInputStream());
-                    nxt_outs.writeObject("900 "+new_ns_id +" " + new_ns_ip + " " + new_ns_port);
+                    nxt_outs.writeObject(""+ 900 +" "+ new_ns_id +" " + new_ns_ip + " " + new_ns_port);
 
                     //read in pred_id:succ_id-
                     String pred_succ_id = (String) nxt_ins.readObject();
@@ -177,7 +177,7 @@ public class BootstrapDriver {
                     ObjectInputStream succ_ins = new ObjectInputStream(succ_sock.getInputStream());
 					ObjectOutputStream succ_outs = new ObjectOutputStream(succ_sock.getOutputStream());
 
-                    succ_outs.writeObject("901 "+new_ns_id + " "+new_ns_ip+ " " + new_ns_port);
+                    succ_outs.writeObject( "" + 901 + " " + new_ns_id + " " + new_ns_ip +  " " + new_ns_port);
 
                     //read in pred_id:succ_id-
                     String pred_succ_id = (String) succ_ins.readObject();

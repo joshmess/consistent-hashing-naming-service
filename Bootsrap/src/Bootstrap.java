@@ -61,7 +61,7 @@ public class Bootstrap {
 		ObjectInputStream ins = new ObjectInputStream(succ_sock.getInputStream());
 		ObjectOutputStream outs = new ObjectOutputStream(succ_sock.getOutputStream());
         //write 'lookup key' then 0 for this server
-		outs.writeObject("800 "+key);
+		outs.writeObject("" + 800 + " " + key);
 		outs.writeObject("0");
         //read value and  server list
         String value = (String) ins.readObject();
@@ -110,7 +110,7 @@ public class Bootstrap {
             ObjectInputStream nxt_ins = new ObjectInputStream(nxt_sock.getInputStream());
             ObjectOutputStream nxt_outs = new ObjectOutputStream(nxt_sock.getOutputStream());
             //write insert key value
-            nxt_outs.writeObject("801 "+ key + " " + value);
+            nxt_outs.writeObject("" + 801 + " "+ key + " " + value);
             String servers_visited = (String) nxt_ins.readObject();
             int servcount = 0;
             //iterate over servers that should be displayed
@@ -153,7 +153,7 @@ public class Bootstrap {
             Socket nxt_sock = new Socket(configuration.successor_ip,configuration.successor_port);
             ObjectInputStream nxt_ins = new ObjectInputStream(nxt_sock.getInputStream());
             ObjectOutputStream nxt_outs = new ObjectOutputStream(nxt_sock.getOutputStream());
-            nxt_outs.writeObject("802 " + key);
+            nxt_outs.writeObject("" + 802 + " " + key);
 
             String id_list = (String) nxt_ins.readObject();
             int servcount = 0;

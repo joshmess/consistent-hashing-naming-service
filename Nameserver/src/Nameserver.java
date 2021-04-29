@@ -51,7 +51,7 @@ public class Nameserver {
             ObjectOutputStream outs = new ObjectOutputStream(succ_sock.getOutputStream());
 
             //write lookup key
-            outs.writeObject("800 "+key);
+            outs.writeObject("" + 800 + " " + key);
 			outs.writeObject(server_list);
 			String value = (String) ins.readObject();
 			String new_servers = (String) ins.readObject();
@@ -75,7 +75,7 @@ public class Nameserver {
             Socket nxt_sock = new Socket(configuration.successor_ip, configuration.successor_port);
             ObjectInputStream nxt_ins = new ObjectInputStream(nxt_sock.getInputStream());
             ObjectOutputStream nxt_outs = new ObjectOutputStream(nxt_sock.getOutputStream());
-            nxt_outs.writeObject("801 "+key+" "+value);
+            nxt_outs.writeObject("" + 801+ " " + key + " " + value);
             nxt_outs.writeObject(configuration.id);
             value = (String) nxt_ins.readObject();
             nxt_sock.close();
@@ -99,7 +99,7 @@ public class Nameserver {
             Socket nxt_sock = new Socket(configuration.successor_ip,configuration.successor_port);
             ObjectInputStream nxt_ins = new ObjectInputStream(nxt_sock.getInputStream());
             ObjectOutputStream nxt_outs = new ObjectOutputStream(nxt_sock.getOutputStream());
-            nxt_outs.writeObject("802 " + key);
+            nxt_outs.writeObject("" + 802 + " " + key);
             return (String) nxt_ins.readObject();
         }else{
             return "*404NotFound";
