@@ -4,8 +4,28 @@ import java.net.Socket;
 import java.util.Scanner;
 import java.net.ServerSocket;
 
+/*SERVICE CODES
+*
+* NS Process
+*   500 --> NS ENTER
+*   NS EXIT      
+*       600 --> UPDATE_PRED
+*       601 --> UPDATE_SUCC
+*
+* Bootstrap UI (Client Interaction)
+*   800 --> LOOKUP
+*   801 --> INSERT
+*   802 --> DELETE
+*
+* Bootstrap Process
+*   900 --> HIGHEST ENTRY
+*   901 --> MIDDLE ENTRY
+*   902 --> BOOTSTRAP ONLY ENTRY
+*
+*/
+
 /*
-* Driving class for a nameserver.
+* Driving class for the main nameserver process and the NS query handling thread.
 */
 public class NameserverDriver {
 
@@ -41,11 +61,11 @@ public class NameserverDriver {
                 ObjectOutputStream outs = new ObjectOutputStream(sock.getOutputStream());
                 ObjectInputStream ins = new ObjectInputStream(sock.getInputStream());
                 //write to bootstrap: entry:nsID:nsIP:conn_port
-                outs.writeObject("enter:"+id+":"+ Inet4Address.getLocalHost().getHostAddress()+":"+conn_port);
+                outs.writeObject("" + 500+ ":"+id+":"+ Inet4Address.getLocalHost().getHostAddress()+":"+conn_port);
                 //read in 'bootstrap_ip:bootstrap_port'
                 String bootstrap_address = (String) ins.readObject();
                 String[] bootstrap_tuple = bootstrap_address.split(":");
-                //read in 'ns1,ns2,ns3...'
+                //read in 'ns1 > ns2 > ns3...'
                 String servers_visited = (String) ins.readObject();
 
                 //enter if statement
@@ -63,8 +83,8 @@ public class NameserverDriver {
                 String[] succ_tuple = succ_info.split(":");
 
                 //reconfigure ns
-                ns.configuration.id = id;
                 ns.configuration.reconfigure(Integer.parseInt(succ_tuple[1]),Integer.parseInt(pred_tuple[1]),Integer.parseInt(id_tuple[1]),Integer.parseInt(id_tuple[0]),succ_tuple[0],pred_tuple[0]);
+                ns.configuration.id = id;
                 String tuple = "";
                 String[] kvp = null;
 
@@ -99,8 +119,13 @@ public class NameserverDriver {
                 ObjectOutputStream succ_outs = new ObjectOutputStream(succ_sock.getOutputStream());
                 ObjectInputStream succ_ins = new ObjectInputStream(succ_sock.getInputStream());
 
+                 //configure connection with predecessor
+                 Socket pred_sock = new Socket(ns.configuration.predecessor_ip,ns.configuration.predecessor_port);
+                 ObjectOutputStream pred_outs = new ObjectOutputStream(pred_sock.getOutputStream());
+                 ObjectInputStream pred_ins = new ObjectInputStream(pred_sock.getInputStream());
+
                 //tell successor about exit
-                succ_outs.writeObject("update_pred");
+                succ_outs.writeObject(""+600);
                 //send pred_id:pred_ip:pred_port
                 succ_outs.writeObject(""+ns.configuration.predecessor_id+":"+ns.configuration.predecessor_ip+":"+ns.configuration.predecessor_port);
                     
@@ -115,11 +140,8 @@ public class NameserverDriver {
                 }
                 succ_outs.writeObject("END");
                     
-                //configure connection with predecessor
-                Socket pred_sock = new Socket(ns.configuration.predecessor_ip,ns.configuration.predecessor_port);
-                ObjectOutputStream pred_outs = new ObjectOutputStream(pred_sock.getOutputStream());
-                ObjectInputStream pred_ins = new ObjectInputStream(pred_sock.getInputStream());
-                pred_outs.writeObject("update_succ");
+                //contect predecessor
+                pred_outs.writeObject("" + 601);
                 //send succ_id:succ_ip:succ_port
                 pred_outs.writeObject(""+ns.configuration.successor_id+":"+ns.configuration.successor_ip+":"+ns.configuration.successor_port);
                 
@@ -163,8 +185,9 @@ public class NameserverDriver {
 
                     String query = (String) ins.readObject();
                     String[] query_list = query.split(" ");
+                    int code = Integer.parseInt(query_list[0]);
                 
-                    if(query_list[0].equals("lookup")){
+                    if(code == 800){
 
                         String server_list = (String) ins.readObject();
                         //lookup in ns
@@ -181,13 +204,13 @@ public class NameserverDriver {
                         outs.writeObject(value);
                         outs.writeObject(server_list);
 
-                    }else if(query_list[0].equals("insert")){
+                    }else if(code == 801){
                         //insert into ns or succ
                         outs.writeObject(ns.configuration.id + " > " + ns.insert(Integer.parseInt(query_list[1]), query_list[2]));
-                    }else if(query_list[0].equals("delete")){
+                    }else if(code == 802){
                         //call ns delete
                         outs.writeObject(ns.configuration.id + " > " + ns.delete(Integer.parseInt(query_list[1])));
-                    }else if(query_list[0].equals("middle-entry")){
+                    }else if(code == 901){
                         //ns entering in between other nameservers
                         int entering_id = Integer.parseInt(query_list[1]);
                         String entering_ip  = query_list[2];
@@ -220,7 +243,7 @@ public class NameserverDriver {
                             ns.configuration.predecessor_port = entering_port;
                         }
                         //more than one hop??
-                    }else if(query_list[0].equals("highest-entry")){                    
+                    }else if(code == 900){                    
                         //ns entering with highest id
                         int new_ns_id = Integer.parseInt(query_list[1]);
                         String new_ns_ip  = query_list[2];
@@ -235,7 +258,7 @@ public class NameserverDriver {
                             Socket  nxt_sock = new Socket(nxt_ip,nxt_port);
                             ObjectOutputStream nxt_outs = new ObjectOutputStream(nxt_sock.getOutputStream());
                             ObjectInputStream nxt_ins = new ObjectInputStream(nxt_sock.getInputStream());
-                            nxt_outs.writeObject("highest-entry "+new_ns_id +" " + new_ns_ip + " " + new_ns_port);
+                            nxt_outs.writeObject("" + 900 + " "+new_ns_id +" " + new_ns_ip + " " + new_ns_port);
 
                             //read in pred_id:succ_id-
                             String pred_succ_id = (String) nxt_ins.readObject();
